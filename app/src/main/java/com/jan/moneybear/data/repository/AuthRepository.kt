@@ -2,6 +2,7 @@
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -34,8 +35,23 @@ class AuthRepository(private val context: Context) {
             val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
                 ?: throw IllegalStateException("Google account is null")
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-            auth.signInWithCredential(credential).await()
+            try {
+                auth.signInWithCredential(credential).await()
+            } catch (e: Exception) {
+                Log.e(
+                    "AUTH",
+                    "Firebase signInWithCredential failed: ${e.message} (cause=${e.cause?.message})",
+                    e
+                )
+                throw e
+            }
             auth.currentUser ?: throw IllegalStateException("Firebase user is null after sign-in")
+        }.onFailure { e ->
+            Log.e(
+                "AUTH",
+                "Google sign-in flow failed: ${e.message} (cause=${e.cause?.message})",
+                e
+            )
         }
     }
 

@@ -1,6 +1,7 @@
 package com.jan.moneybear.ui.screen
 
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -83,12 +84,23 @@ fun LoginScreen(
                 if (signInResult.isSuccess) {
                     onLoginSuccess()
                 } else {
-                    errorMessage = signInResult.exceptionOrNull()?.message
-                        ?: context.getString(R.string.login_failed)
+                    val exception = signInResult.exceptionOrNull()
+                    val msg = exception?.message ?: context.getString(R.string.login_failed)
+                    Log.e(
+                        "AUTH",
+                        "Login failed: $msg (cause=${exception?.cause?.message})",
+                        exception
+                    )
+                    errorMessage = msg
+                    snackbarHostState.showSnackbar("Login failed: $msg")
                 }
             }
         } else {
             isLoading = false
+            Log.e("AUTH", "Login cancelled or failed before returning RESULT_OK")
+            scope.launch {
+                snackbarHostState.showSnackbar("Login cancelled")
+            }
         }
     }
 
@@ -142,10 +154,24 @@ fun LoginScreen(
                     isLoading = isLoading,
                     errorMessage = errorMessage,
                     onGoogleLogin = {
-                        isLoading = true
-                        errorMessage = null
-                        val signInIntent = authRepository.startGoogleSignIn()
-                        launcher.launch(signInIntent)
+                        try {
+                            isLoading = true
+                            errorMessage = null
+                            val signInIntent = authRepository.startGoogleSignIn()
+                            launcher.launch(signInIntent)
+                        } catch (e: Exception) {
+                            isLoading = false
+                            val msg = e.message ?: context.getString(R.string.login_failed)
+                            Log.e(
+                                "AUTH",
+                                "Failed to start Google sign-in: $msg (cause=${e.cause?.message})",
+                                e
+                            )
+                            errorMessage = msg
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Login failed: $msg")
+                            }
+                        }
                     }
                 )
 
