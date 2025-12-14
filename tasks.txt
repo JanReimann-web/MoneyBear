@@ -1,0 +1,30 @@
+
+> Task :app:tasks
+
+------------------------------------------------------------
+Tasks runnable from project ':app'
+------------------------------------------------------------
+
+Help tasks
+----------
+artifactTransforms - Displays the Artifact Transforms that can be executed in project ':app'.
+buildEnvironment - Displays all buildscript dependencies declared in project ':app'.
+dependencies - Displays all dependencies declared in project ':app'.
+dependencyInsight - Displays the insight into a specific dependency in project ':app'.
+help - Displays a help message.
+javaToolchains - Displays the detected java toolchains.
+kotlinDslAccessorsReport - Prints the Kotlin code for accessing the currently available project extensions and conventions.
+outgoingVariants - Displays the outgoing variants of project ':app'.
+projects - Displays the sub-projects of project ':app'.
+properties - Displays the properties of project ':app'.
+resolvableConfigurations - Displays the configurations that can be resolved in project ':app'.
+tasks - Displays the tasks runnable from project ':app'.
+
+Other tasks
+-----------
+components - Displays the components produced by project ':app'. [deprecated]
+dependentComponents - Displays the dependent components of components in project ':app'. [deprecated]
+model - Displays the configuration model of project ':app'. [deprecated]
+
+BUILD SUCCESSFUL in 2s
+1 actionable task: 1 executed

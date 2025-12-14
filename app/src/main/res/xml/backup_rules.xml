@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Backup rules for MoneyBear app.
+   Includes Room database and DataStore preferences for local data backup.
+   See https://developer.android.com/guide/topics/data/autobackup
+-->
+<full-backup-content>
+    <!-- Include Room database files -->
+    <include domain="database" path="."/>
+    
+    <!-- Include DataStore preferences -->
+    <include domain="sharedpref" path="."/>
+    
+    <!-- Include files directory if needed for any local files -->
+    <include domain="file" path="."/>
+</full-backup-content>
