@@ -47,7 +47,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -63,7 +63,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,6 +70,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -151,12 +151,12 @@ fun HomeScreen(
     val twoMonthsAgo = remember(currentMonth) { addMonths(currentMonth, -2) }
     val categoryViewportMonths = remember(currentMonth) { monthWindow(currentMonth, past = 3, future = 1) }
     val categoryQueryMonths = remember(currentMonth) { monthWindow(currentMonth, past = 24, future = 6) }
-    val currency by settingsStore.currencyCode.collectAsState(initial = "EUR")
-    val expenseCategories by settingsStore.expenseCategories.collectAsState(initial = DEFAULT_EXPENSE_CATEGORIES)
-    val budget by settingsStore.budgetMonthly.collectAsState(initial = null)
-    val budgetCycleStartDay by settingsStore.budgetCycleStartDay.collectAsState(initial = 1)
-    val savingsGoals by settingsStore.savingsGoals.collectAsState(initial = emptyList())
-    val savingsBalances by transactionRepository.savingsBalances().collectAsState(initial = emptyMap())
+    val currency by settingsStore.currencyCode.collectAsStateWithLifecycle(initialValue = "EUR")
+    val expenseCategories by settingsStore.expenseCategories.collectAsStateWithLifecycle(initialValue = DEFAULT_EXPENSE_CATEGORIES)
+    val budget by settingsStore.budgetMonthly.collectAsStateWithLifecycle(initialValue = null)
+    val budgetCycleStartDay by settingsStore.budgetCycleStartDay.collectAsStateWithLifecycle(initialValue = 1)
+    val savingsGoals by settingsStore.savingsGoals.collectAsStateWithLifecycle(initialValue = emptyList())
+    val savingsBalances by transactionRepository.savingsBalances().collectAsStateWithLifecycle(initialValue = emptyMap())
     val zoneId = remember { ZoneId.systemDefault() }
     val budgetCycle = currentBudgetCycle(budgetCycleStartDay, zoneId)
     val cycleStartMillis = remember(budgetCycle) {
@@ -165,22 +165,22 @@ fun HomeScreen(
     val cycleEndMillisExclusive = remember(budgetCycle) {
         budgetCycle.endInclusive.plusDays(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
     }
-    val expenseSum by transactionRepository.sumExpensesBetween(cycleStartMillis, cycleEndMillisExclusive).collectAsState(initial = 0.0)
-    val incomeSum by transactionRepository.sumIncomesBetween(cycleStartMillis, cycleEndMillisExclusive).collectAsState(initial = 0.0)
+    val expenseSum by transactionRepository.sumExpensesBetween(cycleStartMillis, cycleEndMillisExclusive).collectAsStateWithLifecycle(initialValue = 0.0)
+    val incomeSum by transactionRepository.sumIncomesBetween(cycleStartMillis, cycleEndMillisExclusive).collectAsStateWithLifecycle(initialValue = 0.0)
     val cycleInfo = calculateBudgetCycleInfo(budgetCycle, zoneId)
-    val transactionsCurrent by transactionRepository.listMonth(currentMonth).collectAsState(initial = emptyList())
-    val transactionsPrevious by transactionRepository.listMonth(previousMonth).collectAsState(initial = emptyList())
-    val transactionsTwoMonthsAgo by transactionRepository.listMonth(twoMonthsAgo).collectAsState(initial = emptyList())
-    val recentTransactions by transactionRepository.listRecent(5).collectAsState(initial = emptyList())
+    val transactionsCurrent by transactionRepository.listMonth(currentMonth).collectAsStateWithLifecycle(initialValue = emptyList())
+    val transactionsPrevious by transactionRepository.listMonth(previousMonth).collectAsStateWithLifecycle(initialValue = emptyList())
+    val transactionsTwoMonthsAgo by transactionRepository.listMonth(twoMonthsAgo).collectAsStateWithLifecycle(initialValue = emptyList())
+    val recentTransactions by transactionRepository.listRecent(5).collectAsStateWithLifecycle(initialValue = emptyList())
     val nowMillis = remember { System.currentTimeMillis() }
-    val futureTransactions by transactionRepository.listFuture(nowMillis).collectAsState(initial = emptyList())
-    val olderTransactions by transactionRepository.listOlderThan(twoMonthsAgo).collectAsState(initial = emptyList())
-    val balanceBaselineState = settingsStore.balanceBaseline.collectAsState(initial = null)
+    val futureTransactions by transactionRepository.listFuture(nowMillis).collectAsStateWithLifecycle(initialValue = emptyList())
+    val olderTransactions by transactionRepository.listOlderThan(twoMonthsAgo).collectAsStateWithLifecycle(initialValue = emptyList())
+    val balanceBaselineState = settingsStore.balanceBaseline.collectAsStateWithLifecycle(initialValue = null)
     val balanceBaseline = balanceBaselineState.value
 
     val categoryEntries by transactionRepository
         .expenseCategorySeries(categoryQueryMonths)
-        .collectAsState(initial = emptyList())
+        .collectAsStateWithLifecycle(initialValue = emptyList())
 
     val categoryMonths = remember(categoryEntries, categoryViewportMonths, categoryQueryMonths) {
         val monthsWithData = categoryEntries.map { it.month }.toSet()
@@ -199,7 +199,7 @@ fun HomeScreen(
             transactionRepository.transactionsBetween(baseline.dateMillis, balanceChartEndMillis)
         }
     }
-    val balanceTransactionsState = balanceTransactionsFlow?.collectAsState(initial = emptyList())
+    val balanceTransactionsState = balanceTransactionsFlow?.collectAsStateWithLifecycle(initialValue = emptyList())
     val balanceTransactions = balanceTransactionsState?.value ?: emptyList()
     val balancePoints = remember(balanceBaseline, balanceTransactions, balanceChartEndMillis) {
         if (balanceBaseline != null) {
@@ -1381,7 +1381,7 @@ private fun BalanceChartTable(
                     )
                 }
             }
-            Divider(color = MaterialTheme.colorScheme.surfaceVariant)
+            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
         }
     }
 }
@@ -1511,7 +1511,7 @@ private fun RecentTransactionsCard(
                         .fillMaxWidth()
                         .padding(top = 8.dp)
                 ) {
-                    Divider(modifier = Modifier.padding(horizontal = 20.dp))
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = "$EMOJI_HISTORY ${stringResource(R.string.transaction_history_title)}",
@@ -2053,7 +2053,7 @@ private fun TransactionActionDialog(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Divider(color = MaterialTheme.colorScheme.surfaceVariant)
+                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
                 TextButton(onClick = { onEdit(transaction) }) {
                     Text(text = stringResource(R.string.edit_transaction))
                 }

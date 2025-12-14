@@ -8,8 +8,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavHostController
@@ -26,7 +29,6 @@ import com.jan.moneybear.ui.screen.SettingsScreen
 import com.jan.moneybear.ui.theme.MoneyBearTheme
 import com.jan.moneybear.util.LocaleUtils
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +38,6 @@ class MainActivity : AppCompatActivity() {
         val app = application as MoneyBearApp
         val authRepository = app.authRepository
         val settingsStore = app.settingsStore
-        val initialLanguage = runBlocking { settingsStore.languageCode.first() }
-        LocaleUtils.applyAppLanguage(initialLanguage)
         
         // Determine start destination based on auth state
         val startDestination = if (authRepository.currentUser != null) {
@@ -47,12 +47,15 @@ class MainActivity : AppCompatActivity() {
         }
         
         setContent {
-            val languageCode by settingsStore.languageCode.collectAsState(initial = initialLanguage)
+            var languageCode by remember { mutableStateOf("et") }
+            LaunchedEffect(Unit) {
+                languageCode = settingsStore.languageCode.first()
+            }
             LaunchedEffect(languageCode) {
                 LocaleUtils.applyAppLanguage(languageCode)
             }
-            val themeMode by settingsStore.themeMode.collectAsState(initial = "dark")
-            val accentId by settingsStore.accentColor.collectAsState(initial = "teal")
+            val themeMode by settingsStore.themeMode.collectAsStateWithLifecycle(initialValue = "dark")
+            val accentId by settingsStore.accentColor.collectAsStateWithLifecycle(initialValue = "teal")
             MoneyBearTheme(themeMode = themeMode, accentId = accentId) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
