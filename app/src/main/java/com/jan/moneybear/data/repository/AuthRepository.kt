@@ -17,6 +17,7 @@ class AuthRepository(private val context: Context) {
 
     private val appContext = context.applicationContext
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    @Suppress("DEPRECATION")
     private val googleSignInClient: GoogleSignInClient by lazy {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(appContext.getString(R.string.default_web_client_id))
@@ -30,6 +31,7 @@ class AuthRepository(private val context: Context) {
 
     fun startGoogleSignIn(): Intent = googleSignInClient.signInIntent
 
+    @Suppress("DEPRECATION")
     suspend fun finishGoogleSignIn(data: Intent?): Result<FirebaseUser> {
         return runCatching {
             val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
