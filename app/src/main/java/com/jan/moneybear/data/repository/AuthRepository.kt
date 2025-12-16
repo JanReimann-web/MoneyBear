@@ -1,4 +1,6 @@
-﻿package com.jan.moneybear.data.repository
+﻿@file:Suppress("DEPRECATION")
+
+package com.jan.moneybear.data.repository
 
 import android.content.Context
 import android.content.Intent
