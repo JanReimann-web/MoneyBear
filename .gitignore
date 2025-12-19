@@ -35,3 +35,14 @@ Thumbs.db
 # =========================
 classes.jar
 
+# Firebase
+app/google-services.json
+
+# Local config
+local.properties
+*.jks
+*.keystore
+*.p12
+*.pem
+.env
+
