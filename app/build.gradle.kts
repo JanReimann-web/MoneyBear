@@ -9,12 +9,12 @@
 android {
     namespace = "com.jan.moneybear"
 
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.jan.moneybear"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -43,11 +43,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "21"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -75,7 +75,6 @@ dependencies {
     // Kotlin coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
 
     // AndroidX core
     implementation("androidx.core:core-ktx:1.15.0")
@@ -93,11 +92,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
-
-    // Credential Manager + Google ID
-    implementation("androidx.credentials:credentials:1.3.0")
-    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     // Charts
     implementation("com.patrykandpatrick.vico:compose:2.0.0")
