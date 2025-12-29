@@ -39,5 +39,8 @@ jobs:
             echo "google-services.json MISSING"
           fi
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Build Debug
         run: ./gradlew assembleDebug --stacktrace --info
