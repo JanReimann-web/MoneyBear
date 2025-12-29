@@ -26,5 +26,13 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Check google-services.json presence
+        run: |
+          if [ -f app/google-services.json ]; then
+            echo "google-services.json exists"
+          else
+            echo "google-services.json MISSING"
+          fi
+
       - name: Build Debug
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --stacktrace --info
