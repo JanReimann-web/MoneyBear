@@ -1,18 +1,10 @@
-﻿import org.gradle.api.GradleException
-import org.gradle.api.Project
-
-plugins {
+﻿plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
 }
-
-fun Project.stringProp(name: String): String? = (findProperty(name) as String?) ?: System.getenv(name)
-
-val isReleaseRequested =
-    gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = true) }
 
 android {
     namespace = "com.jan.moneybear"
@@ -30,61 +22,10 @@ android {
 
     signingConfigs {
         create("release") {
-            val storeFilePath =
-                if (isReleaseRequested) {
-                    stringProp("MONEYBEAR_STORE_FILE")?.takeIf { it.isNotBlank() }
-                        ?: throw GradleException(
-                            "Missing release signing value MONEYBEAR_STORE_FILE. " +
-                                "Set it in gradle.properties or as an environment variable."
-                        )
-                } else {
-                    stringProp("MONEYBEAR_STORE_FILE")?.takeIf { it.isNotBlank() }
-                }
-
-            if (isReleaseRequested) {
-                val keystoreFile = file(storeFilePath)
-                if (!keystoreFile.exists()) {
-                    throw GradleException("Release keystore not found at: $storeFilePath")
-                }
-            }
-
-            val storePw =
-                if (isReleaseRequested) {
-                    stringProp("MONEYBEAR_STORE_PASSWORD")?.takeIf { it.isNotBlank() }
-                        ?: throw GradleException(
-                            "Missing release signing value MONEYBEAR_STORE_PASSWORD. " +
-                                "Set it in gradle.properties or as an environment variable."
-                        )
-                } else {
-                    stringProp("MONEYBEAR_STORE_PASSWORD")?.takeIf { it.isNotBlank() }
-                }
-
-            val alias =
-                if (isReleaseRequested) {
-                    stringProp("MONEYBEAR_KEY_ALIAS")?.takeIf { it.isNotBlank() }
-                        ?: throw GradleException(
-                            "Missing release signing value MONEYBEAR_KEY_ALIAS. " +
-                                "Set it in gradle.properties or as an environment variable."
-                        )
-                } else {
-                    stringProp("MONEYBEAR_KEY_ALIAS")?.takeIf { it.isNotBlank() }
-                }
-
-            val keyPw =
-                if (isReleaseRequested) {
-                    stringProp("MONEYBEAR_KEY_PASSWORD")?.takeIf { it.isNotBlank() }
-                        ?: throw GradleException(
-                            "Missing release signing value MONEYBEAR_KEY_PASSWORD. " +
-                                "Set it in gradle.properties or as an environment variable."
-                        )
-                } else {
-                    stringProp("MONEYBEAR_KEY_PASSWORD")?.takeIf { it.isNotBlank() }
-                }
-
-            storeFile = storeFilePath?.let { file(it) }
-            storePassword = storePw
-            keyAlias = alias
-            keyPassword = keyPw
+            storeFile = file("C:/Users/jaane/OneDrive/Documents/Keys/moneybear-release-key.jks")
+            storePassword = System.getenv("MB_STORE_PW") ?: "Valg3va5e5-3!"
+            keyAlias = "moneybear"
+            keyPassword = System.getenv("MB_KEY_PW") ?: "Valg3va5e5-3!"
         }
     }
 
@@ -128,13 +69,13 @@ dependencies {
 
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
     implementation("androidx.navigation:navigation-compose:2.8.3")
 
     // Kotlin coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
 
     // AndroidX core
     implementation("androidx.core:core-ktx:1.15.0")
@@ -152,6 +93,11 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+
+    // Credential Manager + Google ID
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     // Charts
     implementation("com.patrykandpatrick.vico:compose:2.0.0")
