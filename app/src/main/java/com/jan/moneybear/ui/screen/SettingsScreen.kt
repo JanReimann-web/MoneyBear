@@ -57,12 +57,12 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -99,20 +99,20 @@ fun SettingsScreen(
     val authRepository = app.authRepository
     val scope = rememberCoroutineScope()
 
-    val languageCode by settingsStore.languageCode.collectAsStateWithLifecycle(initialValue = "et")
-    val currencyCode by settingsStore.currencyCode.collectAsStateWithLifecycle(initialValue = "EUR")
-    val budgetMonthly by settingsStore.budgetMonthly.collectAsStateWithLifecycle(initialValue = null)
-    val budgetCycleStartDay by settingsStore.budgetCycleStartDay.collectAsStateWithLifecycle(initialValue = 1)
-    val themeMode by settingsStore.themeMode.collectAsStateWithLifecycle(initialValue = "dark")
-    val accentColor by settingsStore.accentColor.collectAsStateWithLifecycle(initialValue = "teal")
-    val savingsGoals by settingsStore.savingsGoals.collectAsStateWithLifecycle(initialValue = emptyList())
-    val savingsBalances by transactionRepository.savingsBalances().collectAsStateWithLifecycle(initialValue = emptyMap())
-    val balanceBaseline by settingsStore.balanceBaseline.collectAsStateWithLifecycle(initialValue = null)
-    val expenseCategories by settingsStore.expenseCategories.collectAsStateWithLifecycle(
-        initialValue = DEFAULT_EXPENSE_CATEGORIES
+    val languageCode by settingsStore.languageCode.collectAsState(initial = "et")
+    val currencyCode by settingsStore.currencyCode.collectAsState(initial = "EUR")
+    val budgetMonthly by settingsStore.budgetMonthly.collectAsState(initial = null)
+    val budgetCycleStartDay by settingsStore.budgetCycleStartDay.collectAsState(initial = 1)
+    val themeMode by settingsStore.themeMode.collectAsState(initial = "dark")
+    val accentColor by settingsStore.accentColor.collectAsState(initial = "teal")
+    val savingsGoals by settingsStore.savingsGoals.collectAsState(initial = emptyList())
+    val savingsBalances by transactionRepository.savingsBalances().collectAsState(initial = emptyMap())
+    val balanceBaseline by settingsStore.balanceBaseline.collectAsState(initial = null)
+    val expenseCategories by settingsStore.expenseCategories.collectAsState(
+        initial = DEFAULT_EXPENSE_CATEGORIES
     )
-    val incomeCategories by settingsStore.incomeCategories.collectAsStateWithLifecycle(
-        initialValue = DEFAULT_INCOME_CATEGORIES
+    val incomeCategories by settingsStore.incomeCategories.collectAsState(
+        initial = DEFAULT_INCOME_CATEGORIES
     )
 
     var langExpanded by remember { mutableStateOf(false) }
@@ -260,7 +260,7 @@ fun SettingsScreen(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = langExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
                     )
 
                     DropdownMenu(
@@ -294,7 +294,7 @@ fun SettingsScreen(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
                     )
 
                     DropdownMenu(
@@ -355,7 +355,7 @@ fun SettingsScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
                     )
                     DropdownMenu(
                         expanded = startDayExpanded,

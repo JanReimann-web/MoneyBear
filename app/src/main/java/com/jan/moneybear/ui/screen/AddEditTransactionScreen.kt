@@ -41,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +49,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -93,19 +93,19 @@ fun AddEditTransactionScreen(
     val settingsStore = app.settingsStore
     val scope = rememberCoroutineScope()
 
-    val expenseCategories by settingsStore.expenseCategories.collectAsStateWithLifecycle(
-        initialValue = DEFAULT_EXPENSE_CATEGORIES
+    val expenseCategories by settingsStore.expenseCategories.collectAsState(
+        initial = DEFAULT_EXPENSE_CATEGORIES
     )
-    val incomeCategories by settingsStore.incomeCategories.collectAsStateWithLifecycle(
-        initialValue = DEFAULT_INCOME_CATEGORIES
+    val incomeCategories by settingsStore.incomeCategories.collectAsState(
+        initial = DEFAULT_INCOME_CATEGORIES
     )
-    val savingsGoals by settingsStore.savingsGoals.collectAsStateWithLifecycle(initialValue = emptyList())
-    val currency by settingsStore.currencyCode.collectAsStateWithLifecycle(initialValue = "EUR")
+    val savingsGoals by settingsStore.savingsGoals.collectAsState(initial = emptyList())
+    val currency by settingsStore.currencyCode.collectAsState(initial = "EUR")
 
     val existingTransactionFlow = remember(transactionId) {
         transactionId?.let { transactionRepository.observeTransaction(it) }
     }
-    val existingTransaction by existingTransactionFlow?.collectAsStateWithLifecycle(initialValue = null)
+    val existingTransaction by existingTransactionFlow?.collectAsState(initial = null)
         ?: remember { mutableStateOf<Transaction?>(null) }
     var hasInitialized by rememberSaveable(transactionId) { mutableStateOf(false) }
 
@@ -628,7 +628,7 @@ fun AddEditTransactionScreen(
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(goalsExpanded) },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
+                                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
                             )
                             ExposedDropdownMenu(
                                 expanded = goalsExpanded,

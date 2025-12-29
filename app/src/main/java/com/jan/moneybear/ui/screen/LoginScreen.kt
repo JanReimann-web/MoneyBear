@@ -2,8 +2,6 @@ package com.jan.moneybear.ui.screen
 
 import android.app.Activity
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -71,39 +69,6 @@ fun LoginScreen(
     var legalDocument by remember { mutableStateOf<LegalDocument?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            scope.launch {
-                isLoading = true
-                errorMessage = null
-                val signInResult = authRepository.finishGoogleSignIn(result.data)
-                isLoading = false
-
-                if (signInResult.isSuccess) {
-                    onLoginSuccess()
-                } else {
-                    val exception = signInResult.exceptionOrNull()
-                    val msg = exception?.message ?: context.getString(R.string.login_failed)
-                    Log.e(
-                        "AUTH",
-                        "Login failed: $msg (cause=${exception?.cause?.message})",
-                        exception
-                    )
-                    errorMessage = msg
-                    snackbarHostState.showSnackbar("Login failed: $msg")
-                }
-            }
-        } else {
-            isLoading = false
-            Log.e("AUTH", "Login cancelled or failed before returning RESULT_OK")
-            scope.launch {
-                snackbarHostState.showSnackbar("Login cancelled")
-            }
-        }
-    }
-
     val modalState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     legalDocument?.let { document ->
         ModalBottomSheet(
@@ -154,21 +119,32 @@ fun LoginScreen(
                     isLoading = isLoading,
                     errorMessage = errorMessage,
                     onGoogleLogin = {
-                        try {
+                        val activity = context as? Activity
+                        if (activity == null) {
+                            val msg = "Login failed: missing Activity context"
+                            Log.e("AUTH", msg)
+                            errorMessage = msg
+                            scope.launch { snackbarHostState.showSnackbar(msg) }
+                            return@GoogleLoginButton
+                        }
+
+                        scope.launch {
                             isLoading = true
                             errorMessage = null
-                            val signInIntent = authRepository.startGoogleSignIn()
-                            launcher.launch(signInIntent)
-                        } catch (e: Exception) {
+                            val result = authRepository.signInWithGoogle(activity)
                             isLoading = false
-                            val msg = e.message ?: context.getString(R.string.login_failed)
-                            Log.e(
-                                "AUTH",
-                                "Failed to start Google sign-in: $msg (cause=${e.cause?.message})",
-                                e
-                            )
-                            errorMessage = msg
-                            scope.launch {
+
+                            if (result.isSuccess) {
+                                onLoginSuccess()
+                            } else {
+                                val exception = result.exceptionOrNull()
+                                val msg = exception?.message ?: context.getString(R.string.login_failed)
+                                Log.e(
+                                    "AUTH",
+                                    "Login failed: $msg (cause=${exception?.cause?.message})",
+                                    exception
+                                )
+                                errorMessage = msg
                                 snackbarHostState.showSnackbar("Login failed: $msg")
                             }
                         }
