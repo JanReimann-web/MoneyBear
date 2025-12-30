@@ -3,19 +3,19 @@
     <string name="app_name">MoneyBear</string>
 
     <!-- Authentication -->
-    <string name="login_with_google">Sign in with Google</string>
-    <string name="login_subtitle">Stay on top of your money across every device.</string>
-    <string name="login_title">Welcome to MoneyBear</string>
-    <string name="login_tagline">Plan, save, and spend with a calmer mind.</string>
-    <string name="login_terms_label">Terms of Service</string>
-    <string name="login_privacy_label">Privacy Policy</string>
-    <string name="login_terms_disclaimer">By signing in you confirm you&#8217;ve reviewed the Terms of Service and Privacy Policy.</string>
-    <string name="login_terms_sheet_title">Terms of Service</string>
-    <string name="login_terms_sheet_body">MoneyBear helps you track income, expenses, and savings across devices. By using the app you agree to store financial data on your device and to optional syncing services you explicitly enable. Do not share your account credentials with anyone. If you notice suspicious activity, sign out and contact support immediately.</string>
-    <string name="login_privacy_sheet_title">Privacy Policy</string>
-    <string name="login_privacy_sheet_body">We only request the personal information that is required to provide authentication and synchronize your finances. Data never leaves your device unless you turn on cloud sync. You can delete your account and associated data at any time from Settings. For additional details reach out to privacy@moneybear.app.</string>
-    <string name="login_legal_sheet_close">Close</string>
-    <string name="login_failed">Login failed. Please try again.</string>
+    <string name="login_with_google" translatable="false">Sign in with Google</string>
+    <string name="login_subtitle" translatable="false">Stay on top of your money across every device.</string>
+    <string name="login_title" translatable="false">Welcome to MoneyBear</string>
+    <string name="login_tagline" translatable="false">Plan, save, and spend with a calmer mind.</string>
+    <string name="login_terms_label" translatable="false">Terms of Service</string>
+    <string name="login_privacy_label" translatable="false">Privacy Policy</string>
+    <string name="login_terms_disclaimer" translatable="false">By signing in you confirm you&#8217;ve reviewed the Terms of Service and Privacy Policy.</string>
+    <string name="login_terms_sheet_title" translatable="false">Terms of Service</string>
+    <string name="login_terms_sheet_body" translatable="false">MoneyBear helps you track income, expenses, and savings across devices. By using the app you agree to store financial data on your device and to optional syncing services you explicitly enable. Do not share your account credentials with anyone. If you notice suspicious activity, sign out and contact support immediately.</string>
+    <string name="login_privacy_sheet_title" translatable="false">Privacy Policy</string>
+    <string name="login_privacy_sheet_body" translatable="false">We only request the personal information that is required to provide authentication and synchronize your finances. Data never leaves your device unless you turn on cloud sync. You can delete your account and associated data at any time from Settings. For additional details reach out to privacy@moneybear.app.</string>
+    <string name="login_legal_sheet_close" translatable="false">Close</string>
+    <string name="login_failed" translatable="false">Login failed. Please try again.</string>
     <string name="sign_out">Sign Out</string>
 
     <!-- Navigation -->

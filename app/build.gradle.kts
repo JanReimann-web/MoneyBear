@@ -21,18 +21,28 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file("C:/Users/jaane/OneDrive/Documents/Keys/moneybear-release-key.jks")
-            storePassword = System.getenv("MB_STORE_PW") ?: "Valg3va5e5-3!"
-            keyAlias = "moneybear"
-            keyPassword = System.getenv("MB_KEY_PW") ?: "Valg3va5e5-3!"
+        val releaseStoreFile = System.getenv("MB_STORE_FILE")
+        val releaseStorePassword = System.getenv("MB_STORE_PW")
+        val releaseKeyAlias = System.getenv("MB_KEY_ALIAS")
+        val releaseKeyPassword = System.getenv("MB_KEY_PW")
+        if (!releaseStoreFile.isNullOrBlank() &&
+            !releaseStorePassword.isNullOrBlank() &&
+            !releaseKeyAlias.isNullOrBlank() &&
+            !releaseKeyPassword.isNullOrBlank()
+        ) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
         }
     }
 
     buildTypes {
         debug { }
         release {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -52,6 +62,10 @@ android {
 
     buildFeatures {
         compose = true
+    }
+
+    lint {
+        baseline = file("lint-baseline.xml")
     }
 }
 
