@@ -3,7 +3,7 @@ package com.jan.moneybear.domain
 import java.util.Locale
 
 object LanguageConfig {
-    val supported: Set<String> = setOf("en", "et", "fi", "sv", "ru", "lv", "lt")
+    val supported: Set<String> = setOf("en", "et", "fi", "sv", "ru", "lv", "lt", "no", "da", "pl", "de")
     const val FALLBACK: String = "en"
 
     fun sanitize(raw: String?): String {

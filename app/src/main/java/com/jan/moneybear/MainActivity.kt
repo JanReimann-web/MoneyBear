@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             LaunchedEffect(languageCode) {
                 LocaleUtils.applyAppLanguage(languageCode)
             }
-            val themeMode by settingsStore.themeMode.collectAsState(initial = "dark")
+            val themeMode by settingsStore.themeMode.collectAsState(initial = "green")
             val accentId by settingsStore.accentColor.collectAsState(initial = "teal")
             MoneyBearTheme(themeMode = themeMode, accentId = accentId) {
                 Surface(

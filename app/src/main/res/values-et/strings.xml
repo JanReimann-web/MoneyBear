@@ -1,193 +1,189 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">MoneyBear</string>
-
-    <!-- Authentication -->
     <string name="sign_out">Logi välja</string>
-
-    <!-- Navigation -->
     <string name="back">Tagasi</string>
     <string name="settings">Seaded</string>
     <string name="add_transaction">Lisa tehing</string>
-    <string name="add_transaction_extended">Lisa tehing/kanne</string>
+    <string name="add_transaction_extended">Lisa kirje</string>
     <string name="premium">Premium</string>
-
-    <!-- Home Screen -->
-    <string name="current_month">Jooksev kuu</string>
+    <string name="current_month">Käesolev kuu</string>
     <string name="no_transactions">Tehinguid pole veel</string>
-
-    <!-- Transaction Form -->
     <string name="amount">Summa</string>
     <string name="category">Kategooria</string>
     <string name="date">Kuupäev</string>
     <string name="pick_date">Vali kuupäev</string>
     <string name="note">Märkus</string>
-   <string name="planned">Planeeritud</string>
+    <string name="planned">Planeeritud</string>
     <string name="save">Salvesta</string>
     <string name="save_expense_transaction">Salvesta kulu</string>
     <string name="save_income_transaction">Salvesta tulu</string>
-    <string name="save_savings_entry">Salvesta kogumiskanne</string>
-    <string name="savings_entry_category_fallback">Kogumiskanne</string>
-
-    <!-- Settings -->
+    <string name="save_savings_entry">Salvesta kogumise kirje</string>
+    <string name="savings_entry_category_fallback">Kogumise kirje</string>
     <string name="preferences">Eelistused</string>
     <string name="language">Keel</string>
     <string name="currency">Valuuta</string>
     <string name="sync">Sünkroonimine</string>
-    <string name="sync_now">Sünkroniseeri kohe</string>
+    <string name="sync_now">Sünkrooni kohe</string>
+    <string name="sync_prompt_title">Sünkroonida pilveandmeid?</string>
+    <string name="sync_prompt_message">Kas lisasid tehinguid teises seadmes ja soovid need siia tuua?</string>
+    <string name="sync_prompt_positive">Jah, sünkrooni</string>
+    <string name="sync_prompt_negative">Mitte praegu</string>
+    <string name="sync_progress_message">Sünkroonin pilvega...</string>
+    <string name="sync_complete_message">Sünkroonitud %1$d kirjet pilvest.</string>
+    <string name="sync_error_message">Sünkroonimine ebaõnnestus: %1$s</string>
     <string name="expense">Kulu</string>
     <string name="income">Tulu</string>
-    <string name="default_categories">Kategooriate vaikeloend</string>
+    <string name="default_categories">Vaikekategooriad</string>
     <string name="settings_categories_section_title">Kategooriate nimekiri</string>
     <string name="category_breakdown">Kategooriate jaotus</string>
     <string name="expense_amount">Kulu: %1$s</string>
     <string name="income_amount">Tulu: %1$s</string>
     <string name="net_cashflow_forecast">Netorahavoog (järgmised 4 kuud)</string>
-    <string name="total_income">Kokku tulu</string>
-    <string name="total_expense">Kokku kulu</string>
-    <string name="net_total">Neto: %1$s</string>
-    <string name="budget_card_title">Kuu eelarve</string>
+    <string name="total_income">Kogutulu</string>
+    <string name="total_expense">Kogukulu</string>
+    <string name="net_total">Net: %1$s</string>
+    <string name="budget_card_title">Igakuine eelarve</string>
     <string name="settings_budget_section_title">Eelarve</string>
-    <string name="balance_baseline_section_title">Rahasaldo alus</string>
-    <string name="balance_baseline_amount_label">Rahasaldo</string>
-    <string name="balance_baseline_date_label">Kuupäev</string>
-    <string name="balance_baseline_helper">Määra oma tegelik rahasaldo valitud kuupäeval. Selle alusel arvutame mineviku, oleviku ja tuleviku saldod.</string>
-    <string name="balance_baseline_save">Salvesta saldobaas</string>
-    <string name="balance_baseline_clear">Kustuta alus</string>
+    <string name="balance_baseline_section_title">Saldo algus</string>
+    <string name="balance_baseline_amount_label">Saldo summa</string>
+    <string name="balance_baseline_date_label">Saldo kuupäev</string>
+    <string name="balance_baseline_helper">Määra tegelik sularaha saldo kindlal kuupäeval. Arvutame sellest punktist mineviku, oleviku ja tuleviku saldo.</string>
+    <string name="balance_baseline_save">Salvesta saldo algus</string>
+    <string name="balance_baseline_clear">Tühista algsaldo</string>
     <string name="spent_label">Kulutatud</string>
-    <string name="remaining_label">Alles</string>
+    <string name="remaining_label">Jäänud</string>
     <string name="utilization_label">Kasutus</string>
-    <string name="daily_limit_title">Soovituslik päeva limiit</string>
-    <string name="days_remaining_title">Päevi kuu lõpuni</string>
+    <string name="daily_limit_title">Soovituslik päevane limiit</string>
+    <string name="days_remaining_title">Päevi jäänud</string>
     <string name="per_day_amount">%1$d %2$s/päev</string>
-    <string name="no_budget_set">Sea igakuine eelarve seadete all, et seda vaadet näha.</string>
-    <string name="chart_expense_categories_title">Kulud kategooria kaupa</string>
-    <string name="chart_cashflow_title">Netorahavoog</string>
-    <string name="balance_chart_title">Rahasaldo vaade</string>
-    <string name="balance_chart_setup_hint">Lisa saldobaas seadetes, et näha seda graafikut.</string>
-    <string name="balance_chart_no_data">Lisa mõned tehingud, et näha prognoosi.</string>
+    <string name="no_budget_set">Määra Seadetes kuueelarve, et see vaade avada.</string>
+    <string name="chart_expense_categories_title">Kulud kategooriate kaupa</string>
+    <string name="chart_income_categories_title">Tulud kategooriate kaupa</string>
+    <string name="chart_cashflow_title">Netorahavoo prognoos</string>
+    <string name="balance_chart_title">Saldograafik</string>
+    <string name="balance_chart_setup_hint">Lisa Seadetes saldo algus, et graafik aktiveerida.</string>
+    <string name="balance_chart_no_data">Lisa mõned tehingud, et saldo prognoosi näha.</string>
     <string name="balance_chart_total_label">Kokku</string>
-    <string name="balance_chart_reserved_label">Kõrvale pandud</string>
+    <string name="balance_chart_reserved_label">Kogutud</string>
     <string name="balance_chart_available_label">Saadaval</string>
-    <string name="savings_goal_deadline_badge">Tähtaeg: %1$s</string>
-    <string name="legend_income">Tulud</string>
-    <string name="legend_expense">Kulud</string>
-    <string name="legend_net">Netorahavoog</string>
-    <string name="recent_transactions">Viimased tehingud</string>
+    <string name="savings_goal_deadline_badge">Tähtaeg %1$s</string>
+    <string name="legend_income">Tulu</string>
+    <string name="legend_expense">Kulu</string>
+    <string name="legend_net">Net</string>
+    <string name="recent_transactions">Hiljutised tehingud</string>
     <string name="add_category">Lisa</string>
-    <string name="new_expense_category_hint">Nimetus</string>
-    <string name="new_income_category_hint">Nimetus</string>
-    <string name="no_category_available">Lisa kategooriad seadetes, et tehinguid liigitada.</string>
+    <string name="new_expense_category_hint">Nimi</string>
+    <string name="new_income_category_hint">Nimi</string>
+    <string name="no_category_available">Lisa kategooriad Seadetes, et tehinguid liigitada.</string>
     <string name="delete_category_title">Kustuta kategooria?</string>
-    <string name="delete_category_message">Kas soovid kustutada "%1$s"? Varasemad tehingud jäävad alles, kuid uusi sellesse kategooriasse lisada ei saa.</string>
+    <string name="delete_category_message">Kustutada "%1$s"? Olemasolevad tehingud jäävad, kuid uutes tehingutes seda enam valida ei saa.</string>
     <string name="delete_category_confirm">Kustuta</string>
     <string name="planned_badge">Planeeritud</string>
     <string name="user_avatar_cd">Ava seaded</string>
-    <string name="chart_no_data_hint">Andmeid veel napib.</string>
-    <string name="view_chart_details">Vaata graafikut laiemalt</string>
+    <string name="chart_no_data_hint">Andmeid pole veel piisavalt.</string>
+    <string name="view_chart_details">Vaata kogu graafikut</string>
+    <string name="chart_show_income">Näita tulusid</string>
+    <string name="chart_show_expenses">Näita kulusid</string>
     <string name="chart_tab_chart">Graafik</string>
     <string name="chart_tab_table">Tabel</string>
+    <string name="chart_legend_show_more">Näita veel %1$d kategooriat</string>
+    <string name="chart_legend_show_less">Näita vähem kategooriaid</string>
     <string name="open_settings">Ava seaded</string>
     <string name="close">Sulge</string>
     <string name="view_transaction_history">Vaata tehingute ajalugu</string>
     <string name="hide_transaction_history">Peida ajalugu</string>
     <string name="transaction_history_title">Tehingute ajalugu</string>
     <string name="future_transactions">Tulevased tehingud</string>
-    <string name="this_month_transactions">Käesoleva kuu tehingud</string>
-    <string name="previous_month_transactions">Eelmise kuu tehingud</string>
+    <string name="this_month_transactions">Selle kuu</string>
+    <string name="previous_month_transactions">Eelmine kuu</string>
     <string name="two_months_ago_transactions">Kaks kuud tagasi</string>
     <string name="older_transactions">Vanemad tehingud</string>
     <string name="transaction_count_label">%1$d kirjet</string>
     <string name="no_transactions_section_hint">Selles jaotises pole veel tehinguid.</string>
     <string name="schedule_label">Ajastus</string>
-    <string name="schedule_single">Üks kord</string>
+    <string name="schedule_single">Ühekordne</string>
     <string name="schedule_split">Periodiseeritud</string>
     <string name="schedule_recurring">Korduv</string>
-    <string name="split_months_label">Kuude arv</string>
-    <string name="split_months_helper">Summa jaotatakse kuude vahel võrdselt.</string>
-    <string name="recurring_months_label">Järgnevate kuude arv</string>
-    <string name="recurring_months_helper">Luuakse samasugused tehingud järgnevateks kuudeks.</string>
-    <string name="input_invalid_integer">Sisesta täisarv suurem kui %1$d.</string>
+    <string name="split_months_label">Jagatavad kuud</string>
+    <string name="split_months_helper">Summa jagatakse kuude vahel võrdselt.</string>
+    <string name="recurring_months_label">Järgmised kuud</string>
+    <string name="recurring_months_helper">Loob identsed tehingud järgmisteks kuudeks.</string>
+    <string name="input_invalid_integer">Sisesta täisarv, mis on suurem kui %1$d.</string>
     <string name="savings_section_title">Kogumine</string>
+    <string name="savings_direction_add">Lisa</string>
+    <string name="savings_direction_withdraw">Võta välja</string>
     <string name="savings_goal_label">Kogumise eesmärk</string>
-    <string name="savings_goal_helper">Määra summa, mille soovid kokku koguda.</string>
+    <string name="savings_goal_helper">Määra, kui palju soovid kokku koguda.</string>
     <string name="save_savings_goal">Salvesta eesmärk</string>
     <string name="savings_contribution_label">Lisa kogumisse</string>
-    <string name="savings_contribution_helper">Märgi hoiused või ülekanded kogumisse.</string>
+    <string name="savings_contribution_helper">Jälgi sissemakseid või ülekandeid kogumisse.</string>
     <string name="add_savings">Lisa</string>
-    <string name="reset_savings">Nulli progress</string>
+    <string name="reset_savings">Lähtesta progress</string>
     <string name="savings_current_status">Kogutud: %1$.2f %2$s / %3$.2f %2$s</string>
-    <string name="savings_not_set">Sea kogumise eesmärk, et jälgida progressi.</string>
+    <string name="savings_not_set">Sea kogumise eesmärk, et progressi jälgida.</string>
+    <string name="default_savings_goal_name">Kogumise eesmärk</string>
     <string name="savings_goal_progress_label">%1$s / %2$s kogutud</string>
-    <string name="savings_goals_empty_hint">Lisa esimene kogumise eesmärk, et alustada progressi jälgimist.</string>
+    <string name="savings_goals_empty_hint">Lisa esimene kogumise eesmärk, et progressi jälgida.</string>
     <string name="savings_goal_name_label">Eesmärgi nimi</string>
     <string name="savings_goal_target_label">Sihtsumma</string>
+    <string name="savings_goal_deadline_label">Tähtaeg (valikuline)</string>
+    <string name="savings_goal_deadline_helper">Määra kuupäev, millal soovid eesmärgi saavutada</string>
     <string name="add_savings_goal">Lisa eesmärk</string>
+    <string name="clear">Tühjenda</string>
     <string name="edit_savings_goal">Muuda eesmärki</string>
     <string name="delete_savings_goal">Kustuta eesmärk</string>
-    <string name="delete_savings_goal_confirm">Kas soovid kustutada eesmärgi "%1$s"? Tehingud jäävad alles, kuid selle eesmärgi progress läheb nulli.</string>
-    <string name="transaction_options_title">Vali tegevus</string>
+    <string name="delete_savings_goal_confirm">Kustutada "%1$s"? Olemasolevad tehingud jäävad, kuid selle eesmärgi progress lähtestub.</string>
+    <string name="transaction_options_title">Mida soovid teha?</string>
     <string name="edit_transaction">Muuda tehingut</string>
     <string name="delete_transaction">Kustuta tehing</string>
-    <string name="savings_entry_title">Lisa kogumiskanne</string>
-    <string name="savings_entry_helper">Lisa uus kogumise kanne otse kiirlisamise vaates.</string>
-    <string name="add_savings_entry">Salvesta kanne</string>
-    <string name="apply_to_savings_label">Kogumistehing</string>
-    <string name="savings_goal_picker_label">Kogumise eesmärgi valik</string>
+    <string name="delete_transaction_confirm_details">Kustutada %1$s (%2$s)? Seda ei saa tagasi võtta.</string>
+    <string name="cancel">Tühista</string>
+    <string name="savings_entry_title">Lisa kogumise kirje</string>
+    <string name="savings_entry_helper">Lisa uus sissemakse otse kiirlisamise vaates.</string>
+    <string name="add_savings_entry">Salvesta sissemakse</string>
+    <string name="apply_to_savings_label">Kogumise tehing</string>
+    <string name="savings_goal_picker_label">Kogumise eesmärk</string>
     <string name="savings_goal_picker_placeholder">Vali eesmärk</string>
-    <string name="savings_goal_missing_hint">Lisa kogumise eesmärgid seadetes, et tehinguid nendega seostada.</string>
-    <string name="savings_amount_label">Kogumise summa</string>
-    <string name="savings_amount_helper">See summa arvestatakse kogumise eesmärgi täitmisel.</string>
-    <string name="gamification_title">Motiveeritus</string>
-    <string name="gamification_badges_summary">%1$d / %2$d väärtusmärki avatud</string>
-    <string name="badge_savings_starter">Kogumise alustaja</string>
-    <string name="badge_budget_guardian_desc">Püsisid selle kuu eelarvest 90% piires.</string>
-    <string name="badge_savings_starter_desc">Täitsid 25% kogumise eesmärgist.</string>
+    <string name="savings_goal_missing_hint">Loo Seadetes kogumise eesmärgid, et tehinguid siduda.</string>
+    <string name="savings_amount_label">Kogumise mõju</string>
+    <string name="savings_amount_helper">See summa arvestatakse sinu kogumise eesmärgi sisse.</string>
+    <string name="gamification_title">Motivatsioon</string>
+    <string name="gamification_badges_summary">%1$d / %2$d märki avatud</string>
+    <string name="badge_budget_guardian">Eelarve valvur</string>
+    <string name="badge_budget_guardian_desc">Jäid selle kuu eelarve alla 90%%.</string>
+    <string name="badge_savings_starter">Kogumise algataja</string>
+    <string name="badge_savings_starter_desc">Jõudsid 25%% kogumise eesmärgist.</string>
     <string name="badge_savings_champion">Kogumise meister</string>
-    <string name="badge_savings_champion_desc">Täitsid 75% kogumise eesmärgist.</string>
+    <string name="badge_savings_champion_desc">Jõudsid 75%% kogumise eesmärgist.</string>
     <string name="badge_future_planner">Tuleviku planeerija</string>
-    <string name="badge_future_planner_desc">Planeerisid tulevasi tehinguid.</string>
+    <string name="badge_future_planner_desc">Planeerisid tulevased tehingud.</string>
     <string name="badge_net_positive">Netopositiivne</string>
-    <string name="badge_net_positive_desc">Teenid sel kuul rohkem kui kulutasid.</string>
-    <string name="transactions_loaded_from_cloud">Andmed laaditi Cloud Firestore&#8217;ist.</string>
-    <string name="loading">Laeb...</string>
-    <string name="monthly_budget_label">Igakuine eelarve summa</string>
+    <string name="badge_net_positive_desc">Teenitud rohkem kui kulutatud sel kuul.</string>
+    <string name="transactions_loaded_from_cloud">Andmed laaditi Cloud Firestore-ist.</string>
+    <string name="loading">Laadin...</string>
+    <string name="monthly_budget_label">Igakuise eelarve summa</string>
     <string name="monthly_budget_error">Sisesta korrektne number (nt 250.00)</string>
     <string name="save_budget">Salvesta eelarve</string>
+    <string name="appearance_section_title">Vaade ja isikustamine</string>
     <string name="budget_cycle_start_label">Eelarve periood algab</string>
-    <string name="budget_cycle_helper">Vasta eelarve uuendus päevaga, mil saad palka.</string>
+    <string name="budget_cycle_helper">Kasuta seda, et sünkroonida palgapäevaga, mitte kalendrikuuga.</string>
     <string name="budget_cycle_day_first">Kuu esimene päev</string>
     <string name="budget_cycle_day_number">Päev %1$d</string>
-    <string name="appearance_section_title">Vaade ja isikustamine</string>
     <string name="theme_dark_label">Tume režiim</string>
     <string name="theme_light_label">Hele režiim</string>
     <string name="theme_toggle_hint">Vaheta tumeda ja heleda kujunduse vahel.</string>
+    <string name="background_color_label">Taustavärv</string>
     <string name="accent_color_label">Aktsentvärv</string>
     <string name="accent_teal_label">Tuumeroheline</string>
     <string name="accent_orange_label">Oranž</string>
     <string name="accent_blue_label">Sinine</string>
     <string name="accent_purple_label">Lilla</string>
     <string name="accent_green_label">Roheline</string>
+    <string name="accent_black_label">Must</string>
     <string name="log_out">Logi välja</string>
-
-    <!-- Paywall -->
     <string name="unlock_premium">Ava Premium</string>
     <string name="premium_features">Saa piiramatud tehingud, täpsem analüütika ja pilvevaru!</string>
     <string name="subscribe_premium">Telli - 0.99 € / kuu</string>
-    <string name="price_info">Tühista igal ajal. Varjatud tasusid pole.</string>
+    <string name="price_info">Tühista igal ajal. Peidetud tasusid pole.</string>
 </resources>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

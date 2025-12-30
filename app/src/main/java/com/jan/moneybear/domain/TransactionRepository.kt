@@ -52,6 +52,17 @@ class TransactionRepository(
             }
         }
 
+    fun incomeCategorySeries(months: List<String>): Flow<List<CategorySeriesEntry>> =
+        dao.incomeCategoriesForMonths(months).map { rows ->
+            rows.map { row ->
+                CategorySeriesEntry(
+                    month = row.monthKey,
+                    category = row.category,
+                    amount = row.total
+                )
+            }
+        }
+
     fun sumExpensesBetween(startMillis: Long, endMillis: Long): Flow<Double> =
         dao.sumExpensesBetween(startMillis, endMillis)
 

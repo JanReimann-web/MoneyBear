@@ -2,6 +2,7 @@
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,18 +43,14 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -79,12 +76,26 @@ import com.jan.moneybear.data.store.SavingsGoal
 import com.jan.moneybear.domain.DEFAULT_EXPENSE_CATEGORIES
 import com.jan.moneybear.domain.DEFAULT_INCOME_CATEGORIES
 import com.jan.moneybear.ui.components.MoneyBearTopBarTitle
+import com.jan.moneybear.ui.theme.AccentBlack
+import com.jan.moneybear.ui.theme.AccentBlue
+import com.jan.moneybear.ui.theme.AccentGreen
+import com.jan.moneybear.ui.theme.AccentOrange
+import com.jan.moneybear.ui.theme.AccentPurple
+import com.jan.moneybear.ui.theme.AccentTeal
+import com.jan.moneybear.ui.theme.BeigeBackground
+import com.jan.moneybear.ui.theme.BlueBackground
+import com.jan.moneybear.ui.theme.OrangeBackground
+import com.jan.moneybear.ui.theme.PinkBackground
+import com.jan.moneybear.ui.theme.PurpleBackground
+import com.jan.moneybear.ui.theme.DarkBackground
 import com.jan.moneybear.util.LocaleUtils
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -103,7 +114,7 @@ fun SettingsScreen(
     val currencyCode by settingsStore.currencyCode.collectAsState(initial = "EUR")
     val budgetMonthly by settingsStore.budgetMonthly.collectAsState(initial = null)
     val budgetCycleStartDay by settingsStore.budgetCycleStartDay.collectAsState(initial = 1)
-    val themeMode by settingsStore.themeMode.collectAsState(initial = "dark")
+    val themeMode by settingsStore.themeMode.collectAsState(initial = "green")
     val accentColor by settingsStore.accentColor.collectAsState(initial = "teal")
     val savingsGoals by settingsStore.savingsGoals.collectAsState(initial = emptyList())
     val savingsBalances by transactionRepository.savingsBalances().collectAsState(initial = emptyMap())
@@ -142,6 +153,10 @@ fun SettingsScreen(
             LanguageOption("en", "🇬🇧", "English", "English"),
             LanguageOption("fi", "🇫🇮", "Suomi", "Finnish"),
             LanguageOption("sv", "🇸🇪", "Svenska", "Swedish"),
+            LanguageOption("no", "🇳🇴", "Norsk", "Norwegian"),
+            LanguageOption("da", "🇩🇰", "Dansk", "Danish"),
+            LanguageOption("de", "🇩🇪", "Deutsch", "German"),
+            LanguageOption("pl", "🇵🇱", "Polski", "Polish"),
             LanguageOption("ru", "🇷🇺", "Русский", "Russian"),
             LanguageOption("lv", "🇱🇻", "Latviešu", "Latvian"),
             LanguageOption("lt", "🇱🇹", "Lietuvių", "Lithuanian")
@@ -156,16 +171,26 @@ fun SettingsScreen(
             CurrencyOption("NOK", "kr", "Norwegian Krone"),
             CurrencyOption("DKK", "kr", "Danish Krone"),
             CurrencyOption("PLN", "zł", "Polish Złoty"),
-            CurrencyOption("RUB", "₽", "Russian Ruble")
+        )
+    }
+    val themeOptions = remember {
+        listOf(
+            ColorOption("beige", BeigeBackground),
+            ColorOption("pink", PinkBackground),
+            ColorOption("orange", OrangeBackground),
+            ColorOption("purple", PurpleBackground),
+            ColorOption("blue", BlueBackground),
+            ColorOption("green", DarkBackground)
         )
     }
     val accentOptions = remember {
         listOf(
-            AccentOption("teal", R.string.accent_teal_label, Color(0xFF00BFA5)),
-            AccentOption("orange", R.string.accent_orange_label, Color(0xFFFF9800)),
-            AccentOption("blue", R.string.accent_blue_label, Color(0xFF2962FF)),
-            AccentOption("purple", R.string.accent_purple_label, Color(0xFF8E24AA)),
-            AccentOption("green", R.string.accent_green_label, Color(0xFF2E7D32))
+            ColorOption("teal", AccentTeal, R.string.accent_teal_label),
+            ColorOption("orange", AccentOrange, R.string.accent_orange_label),
+            ColorOption("blue", AccentBlue, R.string.accent_blue_label),
+            ColorOption("purple", AccentPurple, R.string.accent_purple_label),
+            ColorOption("green", AccentGreen, R.string.accent_green_label),
+            ColorOption("black", AccentBlack, R.string.accent_black_label)
         )
     }
 
@@ -216,7 +241,9 @@ fun SettingsScreen(
 
     val selectedLanguage = languages.firstOrNull { it.code == languageCode }
     val selectedCurrency = currencies.firstOrNull { it.code == currencyCode }
-    val isDarkMode = themeMode != "light"
+    val normalizedTheme = normalizeThemeMode(themeMode)
+    val selectedThemeId = themeOptions.firstOrNull { it.id == normalizedTheme }?.id ?: themeOptions.last().id
+    val selectedAccentId = accentOptions.firstOrNull { it.id == accentColor }?.id ?: accentOptions.first().id
     val cycleDayOptions = remember { (1..31).toList() }
     val selectedCycleLabel = if (budgetCycleStartDay == 1) {
         stringResource(R.string.budget_cycle_day_first)
@@ -260,7 +287,7 @@ fun SettingsScreen(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = langExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                            .menuAnchor()
                     )
 
                     DropdownMenu(
@@ -294,7 +321,7 @@ fun SettingsScreen(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                            .menuAnchor()
                     )
 
                     DropdownMenu(
@@ -355,7 +382,7 @@ fun SettingsScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                            .menuAnchor()
                     )
                     DropdownMenu(
                         expanded = startDayExpanded,
@@ -592,53 +619,29 @@ fun SettingsScreen(
             }
 
             SettingsSectionCard(titleRes = R.string.appearance_section_title) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(
-                            text = if (isDarkMode) stringResource(R.string.theme_dark_label) else stringResource(R.string.theme_light_label),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = stringResource(R.string.theme_toggle_hint),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                Text(
+                    text = stringResource(R.string.background_color_label),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                ColorSlider(
+                    options = themeOptions,
+                    selectedId = selectedThemeId,
+                    onSelected = { next ->
+                        scope.launch { settingsStore.setThemeMode(next) }
                     }
-                    Switch(
-                        checked = isDarkMode,
-                        onCheckedChange = { checked ->
-                            val next = if (checked) "dark" else "light"
-                            scope.launch { settingsStore.setThemeMode(next) }
-                        },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = MaterialTheme.colorScheme.primary,
-                            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                        )
-                    )
-                }
+                )
 
                 Text(
                     text = stringResource(R.string.accent_color_label),
                     style = MaterialTheme.typography.titleMedium
                 )
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    accentOptions.forEach { option ->
-                        AccentOptionChip(
-                            option = option,
-                            selected = option.id == accentColor,
-                            onSelected = {
-                                scope.launch { settingsStore.setAccentColor(option.id) }
-                            }
-                        )
+                ColorSlider(
+                    options = accentOptions,
+                    selectedId = selectedAccentId,
+                    onSelected = { next ->
+                        scope.launch { settingsStore.setAccentColor(next) }
                     }
-                }
+                )
             }
 
             Button(
@@ -823,6 +826,14 @@ private fun SavingsGoalRow(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            goal.deadlineMillis?.let { deadlineMillis ->
+                val deadlineLabel = remember(deadlineMillis) { formatGoalDeadline(deadlineMillis) }
+                Text(
+                    text = stringResource(R.string.savings_goal_deadline_badge, deadlineLabel),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+            }
         }
     }
 }
@@ -1037,6 +1048,24 @@ private fun DeleteSavingsGoalDialog(
 private fun formatAmount(amount: Double, currency: String): String =
     String.format(Locale.getDefault(), "%.2f %s", abs(amount), currency)
 
+private fun formatGoalDeadline(millis: Long): String {
+    val formatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    return formatter.format(Date(millis))
+}
+
+private fun normalizeThemeMode(raw: String): String {
+    val key = raw.trim().lowercase(Locale.getDefault())
+    return when (key) {
+        "light", "beige" -> "beige"
+        "pink" -> "pink"
+        "orange" -> "orange"
+        "purple" -> "purple"
+        "blue" -> "blue"
+        "green", "dark" -> "green"
+        else -> "green"
+    }
+}
+
 @Composable
 private fun SettingsSectionCard(
     @StringRes titleRes: Int,
@@ -1061,34 +1090,53 @@ private fun SettingsSectionCard(
 }
 
 @Composable
-private fun AccentOptionChip(
-    option: AccentOption,
-    selected: Boolean,
-    onSelected: () -> Unit
+private fun ColorSlider(
+    options: List<ColorOption>,
+    selectedId: String,
+    onSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    FilterChip(
-        selected = selected,
-        onClick = onSelected,
-        label = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+    if (options.isEmpty()) return
+    val activeId = if (options.any { it.id == selectedId }) selectedId else options.first().id
+    val selectedIndex = options.indexOfFirst { it.id == activeId }.coerceAtLeast(0)
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            options.forEach { option ->
+                val isSelected = option.id == activeId
+                val borderColor = if (isSelected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                }
+                val borderWidth = if (isSelected) 2.dp else 1.dp
                 Box(
                     modifier = Modifier
-                        .size(12.dp)
+                        .size(26.dp)
                         .clip(CircleShape)
                         .background(option.color)
+                        .border(borderWidth, borderColor, CircleShape)
                 )
-                Text(text = stringResource(option.labelRes))
             }
-        },
-        colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = option.color.copy(alpha = 0.3f),
-            selectedLabelColor = MaterialTheme.colorScheme.onSurface,
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        }
+        Slider(
+            value = selectedIndex.toFloat(),
+            onValueChange = { value ->
+                val index = value.roundToInt().coerceIn(0, options.lastIndex)
+                val next = options[index].id
+                if (next != activeId) onSelected(next)
+            },
+            valueRange = 0f..options.lastIndex.toFloat(),
+            steps = (options.size - 2).coerceAtLeast(0),
+            modifier = Modifier.fillMaxWidth()
         )
-    )
+    }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -1148,8 +1196,8 @@ private data class CurrencyOption(
     val formatted: String get() = "$symbol $code - $name"
 }
 
-private data class AccentOption(
+private data class ColorOption(
     val id: String,
-    @StringRes val labelRes: Int,
-    val color: Color
+    val color: Color,
+    @StringRes val labelRes: Int? = null
 )

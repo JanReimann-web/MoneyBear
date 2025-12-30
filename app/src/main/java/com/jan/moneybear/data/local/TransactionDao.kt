@@ -86,6 +86,19 @@ interface TransactionDao {
 
     @Query(
         """
+        SELECT 
+            monthKey AS monthKey,
+            category,
+            SUM(ABS(amount)) AS total
+        FROM transactions
+        WHERE monthKey IN (:months) AND deleted = 0 AND type = 'INCOME'
+        GROUP BY monthKey, category
+        """
+    )
+    fun incomeCategoriesForMonths(months: List<String>): Flow<List<CategoryMonthlySum>>
+
+    @Query(
+        """
         SELECT COALESCE(SUM(amount), 0.0) FROM transactions
         WHERE deleted = 0 AND dateUtcMillis >= :startMillis AND dateUtcMillis < :endMillis AND type = 'EXPENSE'
         """

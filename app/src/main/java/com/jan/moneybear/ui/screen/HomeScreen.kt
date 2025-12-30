@@ -1,5 +1,6 @@
 package com.jan.moneybear.ui.screen
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
@@ -81,6 +82,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -102,6 +104,7 @@ import com.jan.moneybear.data.store.BalanceBaseline
 import kotlinx.coroutines.launch
 import com.jan.moneybear.domain.CategorySeriesEntry
 import com.jan.moneybear.domain.DEFAULT_EXPENSE_CATEGORIES
+import com.jan.moneybear.domain.DEFAULT_INCOME_CATEGORIES
 import com.jan.moneybear.domain.TransactionRepository
 import com.jan.moneybear.domain.addMonths
 import com.jan.moneybear.domain.monthKey
@@ -149,10 +152,16 @@ fun HomeScreen(
     val currentMonth = remember { monthKey() }
     val previousMonth = remember(currentMonth) { addMonths(currentMonth, -1) }
     val twoMonthsAgo = remember(currentMonth) { addMonths(currentMonth, -2) }
-    val categoryViewportMonths = remember(currentMonth) { monthWindow(currentMonth, past = 3, future = 1) }
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val categoryViewportMonths = remember(currentMonth, isLandscape) {
+        val past = if (isLandscape) 8 else 3
+        monthWindow(currentMonth, past = past, future = 1)
+    }
     val categoryQueryMonths = remember(currentMonth) { monthWindow(currentMonth, past = 24, future = 6) }
+    var categoryChartType by rememberSaveable { mutableStateOf(TxType.EXPENSE) }
     val currency by settingsStore.currencyCode.collectAsState(initial = "EUR")
     val expenseCategories by settingsStore.expenseCategories.collectAsState(initial = DEFAULT_EXPENSE_CATEGORIES)
+    val incomeCategories by settingsStore.incomeCategories.collectAsState(initial = DEFAULT_INCOME_CATEGORIES)
     val budget by settingsStore.budgetMonthly.collectAsState(initial = null)
     val budgetCycleStartDay by settingsStore.budgetCycleStartDay.collectAsState(initial = 1)
     val savingsGoals by settingsStore.savingsGoals.collectAsState(initial = emptyList())
@@ -178,12 +187,25 @@ fun HomeScreen(
     val balanceBaselineState = settingsStore.balanceBaseline.collectAsState(initial = null)
     val balanceBaseline = balanceBaselineState.value
 
-    val categoryEntries by transactionRepository
+    val expenseCategoryEntries by transactionRepository
         .expenseCategorySeries(categoryQueryMonths)
         .collectAsState(initial = emptyList())
+    val incomeCategoryEntries by transactionRepository
+        .incomeCategorySeries(categoryQueryMonths)
+        .collectAsState(initial = emptyList())
+    val activeCategoryEntries = if (categoryChartType == TxType.EXPENSE) {
+        expenseCategoryEntries
+    } else {
+        incomeCategoryEntries
+    }
+    val activeCategories = if (categoryChartType == TxType.EXPENSE) {
+        expenseCategories
+    } else {
+        incomeCategories
+    }
 
-    val categoryMonths = remember(categoryEntries, categoryViewportMonths, categoryQueryMonths) {
-        val monthsWithData = categoryEntries.map { it.month }.toSet()
+    val categoryMonths = remember(activeCategoryEntries, categoryViewportMonths, categoryQueryMonths) {
+        val monthsWithData = activeCategoryEntries.map { it.month }.toSet()
         val monthsToShow = categoryQueryMonths.filter { month ->
             month in monthsWithData || month in categoryViewportMonths
         }
@@ -209,8 +231,8 @@ fun HomeScreen(
         }
     }
 
-    val stackedSeries = remember(categoryEntries, categoryMonths) {
-        buildStackedCategorySeries(categoryMonths, categoryEntries, expenseCategories)
+    val stackedSeries = remember(activeCategoryEntries, categoryMonths, activeCategories) {
+        buildStackedCategorySeries(categoryMonths, activeCategoryEntries, activeCategories)
     }
     val stackedCategories = remember(stackedSeries) { stackedSeries.keys.sortedByDescending { category -> stackedSeries[category]?.sumOf { it } ?: 0.0 } }
     val categoryColors = remember(stackedCategories) {
@@ -221,6 +243,16 @@ fun HomeScreen(
         categoryMonths.indices.map { monthIndex ->
             stackedCategories.sumOf { category -> stackedSeries[category]?.getOrNull(monthIndex) ?: 0.0 }
         }
+    }
+    val categoryTitle = if (categoryChartType == TxType.EXPENSE) {
+        stringResource(R.string.chart_expense_categories_title)
+    } else {
+        stringResource(R.string.chart_income_categories_title)
+    }
+    val categoryToggleLabel = if (categoryChartType == TxType.EXPENSE) {
+        stringResource(R.string.chart_show_income)
+    } else {
+        stringResource(R.string.chart_show_expenses)
     }
 
     val remainingBudget = budget?.minus(expenseSum)
@@ -335,6 +367,15 @@ fun HomeScreen(
                     values = stackedSeries,
                     totals = categoryTotalsPerMonth,
                     colors = categoryColors,
+                    title = categoryTitle,
+                    toggleLabel = categoryToggleLabel,
+                    onToggle = {
+                        categoryChartType = if (categoryChartType == TxType.EXPENSE) {
+                            TxType.INCOME
+                        } else {
+                            TxType.EXPENSE
+                        }
+                    },
                     onExpand = { showCategoryDialog = true }
                 )
             }
@@ -380,6 +421,7 @@ fun HomeScreen(
     if (showCategoryDialog) {
         CategoryChartDialog(
             onDismiss = { showCategoryDialog = false },
+            title = categoryTitle,
             months = categoryMonths,
             viewportMonths = categoryViewportMonths,
             categories = stackedCategories,
@@ -444,6 +486,9 @@ private fun CategoryChartCard(
     values: Map<String, List<Double>>,
     totals: List<Double>,
     colors: Map<String, Color>,
+    title: String,
+    toggleLabel: String,
+    onToggle: () -> Unit,
     onExpand: () -> Unit
 ) {
     Card(
@@ -462,12 +507,23 @@ private fun CategoryChartCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$EMOJI_CATEGORY ${stringResource(R.string.chart_expense_categories_title)}",
+                    text = "$EMOJI_CATEGORY $title",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
-                IconButton(onClick = onExpand) {
-                    Text(text = EMOJI_VIEW_DETAILS, style = MaterialTheme.typography.titleMedium)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        onClick = onToggle,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                    ) {
+                        Text(text = toggleLabel, style = MaterialTheme.typography.labelLarge)
+                    }
+                    IconButton(onClick = onExpand) {
+                        Text(text = EMOJI_VIEW_DETAILS, style = MaterialTheme.typography.titleMedium)
+                    }
                 }
             }
             if (categories.isEmpty() || totals.all { it <= 0.0 }) {
@@ -477,6 +533,9 @@ private fun CategoryChartCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
+                var legendExpanded by rememberSaveable(categories.size) { mutableStateOf(false) }
+                val maxLegendItems = 3
+                val visibleCategories = if (legendExpanded) categories else categories.take(maxLegendItems)
                 StackedBarChart(
                     months = months,
                     categories = categories,
@@ -487,14 +546,43 @@ private fun CategoryChartCard(
                         .fillMaxWidth()
                         .height(240.dp)
                 )
-                LegendRow(
-                    items = categories.map { category ->
-                        LegendItem(
-                            color = colors[category] ?: MaterialTheme.colorScheme.primary,
-                            label = category
-                        )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateContentSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    LegendRow(
+                        items = visibleCategories.map { category ->
+                            LegendItem(
+                                color = colors[category] ?: MaterialTheme.colorScheme.primary,
+                                label = category
+                            )
+                        }
+                    )
+                    if (categories.size > maxLegendItems) {
+                        val remainingCount = categories.size - maxLegendItems
+                        TextButton(
+                            onClick = { legendExpanded = !legendExpanded },
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (legendExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = if (legendExpanded) {
+                                    stringResource(R.string.chart_legend_show_less)
+                                } else {
+                                    stringResource(R.string.chart_legend_show_more, remainingCount)
+                                },
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
                     }
-                )
+                }
             }
         }
     }
@@ -774,8 +862,7 @@ private fun StackedBarChart(
     val maxTotal = totals.maxOrNull()?.takeIf { it > 0 } ?: 0.0
     val outlineVariantColor = MaterialTheme.colorScheme.outlineVariant
     val fallbackBarColor = MaterialTheme.colorScheme.primary
-    val barWidth = 36.dp
-    val barSpacing = 18.dp
+    val barSpacing = 12.dp
     val initialIndex = remember(months, viewportMonths) {
         viewportMonths.firstNotNullOfOrNull { month ->
             val index = months.indexOf(month)
@@ -793,6 +880,9 @@ private fun StackedBarChart(
         }
     }
     BoxWithConstraints(modifier = modifier) {
+        val targetVisibleBars = viewportMonths.size.coerceAtLeast(1)
+        val availableWidth = maxWidth - (barSpacing * (targetVisibleBars - 1).toFloat())
+        val barWidth = (availableWidth / targetVisibleBars.toFloat()).coerceAtLeast(24.dp)
         val chartHeight = if (maxHeight != Dp.Unspecified) maxHeight else 240.dp
         val labelSpace = 28.dp
         val barAreaHeight = (chartHeight - labelSpace).coerceAtLeast(0.dp)
@@ -800,7 +890,7 @@ private fun StackedBarChart(
             state = listState,
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.spacedBy(barSpacing),
-            contentPadding = PaddingValues(horizontal = barSpacing)
+            contentPadding = PaddingValues(horizontal = 0.dp)
         ) {
             items(months.size) { index ->
                 val month = months[index]
@@ -1103,6 +1193,7 @@ private fun GamificationCard(
 @Composable
 private fun CategoryChartDialog(
     onDismiss: () -> Unit,
+    title: String,
     months: List<String>,
     viewportMonths: List<String>,
     categories: List<String>,
@@ -1136,7 +1227,7 @@ private fun CategoryChartDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = stringResource(R.string.chart_expense_categories_title),
+                        text = title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )

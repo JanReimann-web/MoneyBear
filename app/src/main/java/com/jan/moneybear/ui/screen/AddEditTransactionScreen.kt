@@ -30,11 +30,8 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -66,8 +63,6 @@ import com.jan.moneybear.domain.TransactionRepository
 import com.jan.moneybear.domain.monthKey
 import com.jan.moneybear.domain.newTxId
 import com.jan.moneybear.ui.components.MoneyBearTopBarTitle
-import java.math.BigDecimal
-import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -76,8 +71,18 @@ import kotlinx.coroutines.launch
 
 private enum class ScheduleType {
     SINGLE,
-    SPLIT,
     RECURRING
+}
+
+private enum class EntryTab {
+    EXPENSE,
+    INCOME,
+    SAVINGS
+}
+
+private enum class SavingsDirection {
+    ADD,
+    WITHDRAW
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -110,22 +115,38 @@ fun AddEditTransactionScreen(
     var hasInitialized by rememberSaveable(transactionId) { mutableStateOf(false) }
 
     var selectedType by remember { mutableStateOf(TxType.EXPENSE) }
+    var selectedTab by rememberSaveable { mutableStateOf(EntryTab.EXPENSE) }
     var amount by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     var dateMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var scheduleType by remember { mutableStateOf(ScheduleType.SINGLE) }
-    var splitMonths by remember { mutableStateOf("2") }
     var recurringMonths by remember { mutableStateOf("1") }
-    var applyToSavings by remember { mutableStateOf(false) }
     var selectedGoalId by remember { mutableStateOf<String?>(null) }
     var savingsImpactInput by remember { mutableStateOf("") }
+    var savingsDirection by rememberSaveable { mutableStateOf(SavingsDirection.ADD) }
 
     val dateFormatter = remember { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()) }
     val formattedDate = remember(dateMillis) { dateFormatter.format(dateMillis) }
 
+    val recentTransactions by transactionRepository.listRecent(200).collectAsState(initial = emptyList())
     val categoriesForType = if (selectedType == TxType.EXPENSE) expenseCategories else incomeCategories
+    val orderedCategories = remember(categoriesForType, recentTransactions, selectedType) {
+        if (categoriesForType.isEmpty()) {
+            categoriesForType
+        } else {
+            val counts = recentTransactions
+                .filter { it.type == selectedType }
+                .groupingBy { it.category.trim().lowercase(Locale.getDefault()) }
+                .eachCount()
+            val baseOrder = categoriesForType.mapIndexed { index, cat -> cat to index }.toMap()
+            categoriesForType.sortedWith(
+                compareByDescending<String> { counts[it.trim().lowercase(Locale.getDefault())] ?: 0 }
+                    .thenBy { baseOrder[it] ?: Int.MAX_VALUE }
+            )
+        }
+    }
 
     fun formatDoubleInput(value: Double): String =
         String.format(Locale.getDefault(), "%.2f", abs(value))
@@ -133,21 +154,31 @@ fun AddEditTransactionScreen(
     LaunchedEffect(existingTransaction, savingsGoals) {
         val tx = existingTransaction
         if (!hasInitialized && tx != null) {
+            val isSavingsEntry = tx.savingsGoalId != null && tx.amount == 0.0
             selectedType = tx.type
+            selectedTab = when {
+                isSavingsEntry -> EntryTab.SAVINGS
+                tx.type == TxType.INCOME -> EntryTab.INCOME
+                else -> EntryTab.EXPENSE
+            }
             amount = formatDoubleInput(tx.amount)
             category = tx.category
             note = tx.note.orEmpty()
             dateMillis = tx.dateUtcMillis
             scheduleType = ScheduleType.SINGLE
-            val goalId = tx.savingsGoalId
-            if (goalId != null && savingsGoals.any { it.id == goalId }) {
-                applyToSavings = true
+            val goalId = tx.savingsGoalId?.takeIf { id -> savingsGoals.any { it.id == id } }
+            if (isSavingsEntry && goalId != null) {
                 selectedGoalId = goalId
                 savingsImpactInput = formatDoubleInput(abs(tx.savingsImpact))
+                savingsDirection = if (tx.savingsImpact < 0) {
+                    SavingsDirection.WITHDRAW
+                } else {
+                    SavingsDirection.ADD
+                }
             } else {
-                applyToSavings = false
                 selectedGoalId = null
                 savingsImpactInput = ""
+                savingsDirection = SavingsDirection.ADD
             }
             hasInitialized = true
         }
@@ -210,19 +241,13 @@ fun AddEditTransactionScreen(
             val cardShape = RoundedCornerShape(20.dp)
             val savingsEnabled = savingsGoals.isNotEmpty()
             val amountValue = amount.replace(',', '.').toDoubleOrNull()
-            val splitMonthsValue = splitMonths.toIntOrNull() ?: 0
             val recurringCountValue = recurringMonths.toIntOrNull() ?: 0
+            val isSavingsTab = selectedTab == EntryTab.SAVINGS
             val scheduleValid = when (scheduleType) {
                 ScheduleType.SINGLE -> true
-                ScheduleType.SPLIT -> splitMonthsValue >= 2
                 ScheduleType.RECURRING -> recurringCountValue >= 0
             }
             val savingsImpactValue = savingsImpactInput.replace(',', '.').toDoubleOrNull()
-            val savingsValid = if (applyToSavings && savingsEnabled) {
-                selectedGoalId != null && savingsImpactValue != null && savingsImpactValue > 0.0
-            } else {
-                true
-            }
             val trimmedCategory = category.trim()
             val categorySelected = if (categoriesForType.isEmpty()) {
                 trimmedCategory.isNotEmpty()
@@ -231,15 +256,17 @@ fun AddEditTransactionScreen(
             } else {
                 categoriesForType.any { it.equals(trimmedCategory, ignoreCase = true) }
             }
-            val formValid =
-                amountValue != null && amountValue > 0.0 && categorySelected && scheduleValid && savingsValid
+            val regularFormValid = amountValue != null &&
+                amountValue > 0.0 &&
+                categorySelected &&
+                scheduleValid
+            val savingsFormValid = savingsEnabled &&
+                selectedGoalId != null &&
+                savingsImpactValue != null &&
+                savingsImpactValue > 0.0
+            val formValid = if (isSavingsTab) savingsFormValid else regularFormValid
             val emptyCategoryLabel = stringResource(R.string.category)
             val savingsEntryFallbackCategory = stringResource(R.string.savings_entry_category_fallback)
-
-            fun signedSavingsImpact(type: TxType, magnitude: Double): Double = when (type) {
-                TxType.INCOME -> magnitude
-                TxType.EXPENSE -> -magnitude
-            }
 
             fun handleTransactionSave(forType: TxType) {
                 if (!formValid) return
@@ -251,15 +278,10 @@ fun AddEditTransactionScreen(
                     val normalizedCategory = trimmedCategory.ifBlank { emptyCategoryLabel }
                     val baseId = existingTransaction?.id ?: newTxId()
                     val plannedFlag = if (transactionId == null) {
-                        scheduleType != ScheduleType.SINGLE
+                        scheduleType == ScheduleType.RECURRING
                     } else {
                         existingTransaction?.planned ?: false
                     }
-                    val goalId = if (applyToSavings && savingsValid) selectedGoalId else null
-                    val impactMagnitude = if (goalId != null && savingsImpactValue != null) {
-                        abs(savingsImpactValue)
-                    } else 0.0
-                    val impact = if (goalId != null) signedSavingsImpact(forType, impactMagnitude) else 0.0
                     val amountToPersist = amountValue ?: 0.0
 
                     val baseTransaction = (existingTransaction ?: Transaction(
@@ -284,22 +306,17 @@ fun AddEditTransactionScreen(
                         note = note.ifBlank { null },
                         planned = plannedFlag,
                         type = forType,
-                        savingsGoalId = goalId,
-                        savingsImpact = impact
+                        savingsGoalId = null,
+                        savingsImpact = 0.0
                     )
 
                     val toPersist = when {
                         transactionId != null -> listOf(baseTransaction)
                         scheduleType == ScheduleType.SINGLE -> listOf(baseTransaction)
-                        scheduleType == ScheduleType.SPLIT -> buildSplitTransactions(
-                            base = baseTransaction,
-                            months = splitMonthsValue,
-                            totalImpact = if (goalId != null) impact else 0.0
-                        )
                         scheduleType == ScheduleType.RECURRING -> buildRecurringTransactions(
                             base = baseTransaction,
                             repeatCount = recurringCountValue,
-                            impactPerOccurrence = if (goalId != null) impact else 0.0
+                            impactPerOccurrence = 0.0
                         )
                         else -> listOf(baseTransaction)
                     }
@@ -319,10 +336,20 @@ fun AddEditTransactionScreen(
                     val uid = existingTransaction?.uid
                         ?: authRepository.currentUser?.uid
                         ?: ""
-                    val normalizedCategory = trimmedCategory.ifBlank {
-                        savingsGoals.firstOrNull { it.id == goalId }?.name ?: savingsEntryFallbackCategory
+                    val normalizedCategory = savingsGoals
+                        .firstOrNull { it.id == goalId }
+                        ?.name
+                        ?: savingsEntryFallbackCategory
+                    val signedImpact = if (savingsDirection == SavingsDirection.WITHDRAW) {
+                        -abs(impactValue)
+                    } else {
+                        abs(impactValue)
                     }
-                    val signedImpact = signedSavingsImpact(selectedType, abs(impactValue))
+                    val savingsType = if (savingsDirection == SavingsDirection.WITHDRAW) {
+                        TxType.EXPENSE
+                    } else {
+                        TxType.INCOME
+                    }
                     val savingsTransaction = Transaction(
                         id = newTxId(),
                         uid = uid,
@@ -333,7 +360,7 @@ fun AddEditTransactionScreen(
                         category = normalizedCategory,
                         note = note.ifBlank { null },
                         planned = false,
-                        type = selectedType,
+                        type = savingsType,
                         savingsGoalId = goalId,
                         savingsImpact = signedImpact
                     )
@@ -342,11 +369,7 @@ fun AddEditTransactionScreen(
                 }
             }
 
-            val showSavingsEntryButton = transactionId == null && applyToSavings && savingsEnabled
-            val canSaveSavingsEntry = showSavingsEntryButton &&
-                selectedGoalId != null &&
-                savingsImpactValue != null &&
-                savingsImpactValue > 0.0
+            val canSaveSavingsEntry = savingsFormValid
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -360,18 +383,25 @@ fun AddEditTransactionScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     val tabs = listOf(
-                        TxType.EXPENSE to stringResource(R.string.expense),
-                        TxType.INCOME to stringResource(R.string.income)
+                        EntryTab.EXPENSE to stringResource(R.string.expense),
+                        EntryTab.INCOME to stringResource(R.string.income),
+                        EntryTab.SAVINGS to stringResource(R.string.savings_section_title)
                     )
-                    val selectedIndex = tabs.indexOfFirst { it.first == selectedType }.coerceAtLeast(0)
+                    val selectedIndex = tabs.indexOfFirst { it.first == selectedTab }.coerceAtLeast(0)
                     TabRow(selectedTabIndex = selectedIndex) {
-                        tabs.forEachIndexed { index, (type, label) ->
+                        tabs.forEachIndexed { index, (tab, label) ->
                             Tab(
                                 selected = selectedIndex == index,
                                 onClick = {
-                                    if (selectedType != type) {
-                                        selectedType = type
-                                        category = ""
+                                    if (selectedTab != tab) {
+                                        selectedTab = tab
+                                        if (tab == EntryTab.EXPENSE) {
+                                            selectedType = TxType.EXPENSE
+                                            category = ""
+                                        } else if (tab == EntryTab.INCOME) {
+                                            selectedType = TxType.INCOME
+                                            category = ""
+                                        }
                                     }
                                 },
                                 text = { Text(label) }
@@ -379,20 +409,22 @@ fun AddEditTransactionScreen(
                         }
                     }
 
-                    OutlinedTextField(
-                        value = amount,
-                        onValueChange = { input ->
-                            amount = input.filter { it.isDigit() || it == '.' || it == ',' }
-                        },
-                        label = { Text(stringResource(R.string.amount)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Decimal,
-                            imeAction = ImeAction.Next
-                        ),
-                        suffix = { Text(currency) }
-                    )
+                    if (!isSavingsTab) {
+                        OutlinedTextField(
+                            value = amount,
+                            onValueChange = { input ->
+                                amount = input.filter { it.isDigit() || it == '.' || it == ',' }
+                            },
+                            label = { Text(stringResource(R.string.amount)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Decimal,
+                                imeAction = ImeAction.Next
+                            ),
+                            suffix = { Text(currency) }
+                        )
+                    }
 
                     Row(
                         modifier = Modifier
@@ -416,30 +448,112 @@ fun AddEditTransactionScreen(
                         }
                     }
 
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text(stringResource(R.string.schedule_label), style = MaterialTheme.typography.titleSmall)
+                    if (!isSavingsTab) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                FilterChip(
+                                    modifier = Modifier.weight(1f),
+                                    selected = scheduleType == ScheduleType.RECURRING,
+                                    onClick = {
+                                        if (scheduleControlsEnabled) {
+                                            scheduleType = if (scheduleType == ScheduleType.RECURRING) {
+                                                ScheduleType.SINGLE
+                                            } else {
+                                                ScheduleType.RECURRING
+                                            }
+                                        }
+                                    },
+                                    enabled = scheduleControlsEnabled,
+                                    label = {
+                                        Box(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(stringResource(R.string.schedule_recurring))
+                                        }
+                                    }
+                                )
+                            }
+                            if (scheduleType == ScheduleType.RECURRING) {
+                                val recurringError = recurringMonths.toIntOrNull()?.let { it < 0 } ?: true
+                                OutlinedTextField(
+                                    value = recurringMonths,
+                                    onValueChange = { recurringMonths = it.filter { ch -> ch.isDigit() } },
+                                    label = { Text(stringResource(R.string.recurring_months_label)) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Next
+                                    ),
+                                    isError = recurringError,
+                                    supportingText = { Text(stringResource(R.string.recurring_months_helper)) }
+                                )
+                            }
+                        }
+
+                        if (categoriesForType.isNotEmpty()) {
+                            Text(stringResource(R.string.category), style = MaterialTheme.typography.titleSmall)
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                maxItemsInEachRow = 3
+                            ) {
+                                orderedCategories.forEach { cat ->
+                                    FilterChip(
+                                        selected = category.equals(cat, ignoreCase = true),
+                                        onClick = { category = cat },
+                                        label = { Text(cat) },
+                                        colors = FilterChipDefaults.filterChipColors(
+                                            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                        )
+                                    )
+                                }
+                            }
+                            if (
+                                selectedType == TxType.EXPENSE &&
+                                category.isNotBlank() &&
+                                categoriesForType.none { it.equals(category, ignoreCase = true) }
+                            ) {
+                                OutlinedTextField(
+                                    value = category,
+                                    onValueChange = { category = it },
+                                    label = { Text(stringResource(R.string.category)) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    singleLine = true
+                                )
+                            }
+                        } else {
+                            OutlinedTextField(
+                                value = category,
+                                onValueChange = { category = it },
+                                label = { Text(stringResource(R.string.category)) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = stringResource(R.string.savings_contribution_label),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             listOf(
-                                ScheduleType.SPLIT to R.string.schedule_split,
-                                ScheduleType.RECURRING to R.string.schedule_recurring
-                            ).forEach { (type, labelRes) ->
+                                SavingsDirection.ADD to R.string.savings_direction_add,
+                                SavingsDirection.WITHDRAW to R.string.savings_direction_withdraw
+                            ).forEach { (direction, labelRes) ->
                                 FilterChip(
                                     modifier = Modifier.weight(1f),
-                                    selected = scheduleType == type,
-                                    onClick = {
-                                        if (scheduleControlsEnabled) {
-                                            scheduleType = if (scheduleType == type) {
-                                                ScheduleType.SINGLE
-                                            } else {
-                                                type
-                                            }
-                                        }
-                                    },
-                                    enabled = scheduleControlsEnabled,
+                                    selected = savingsDirection == direction,
+                                    onClick = { savingsDirection = direction },
                                     label = {
                                         Box(
                                             modifier = Modifier.fillMaxWidth(),
@@ -451,76 +565,74 @@ fun AddEditTransactionScreen(
                                 )
                             }
                         }
-                        if (scheduleType == ScheduleType.SPLIT) {
-                            val splitError = splitMonths.toIntOrNull()?.let { it < 2 } ?: true
-                            OutlinedTextField(
-                                value = splitMonths,
-                                onValueChange = { splitMonths = it.filter { ch -> ch.isDigit() } },
-                                label = { Text(stringResource(R.string.split_months_label)) },
-                                modifier = Modifier.fillMaxWidth(),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Next
-                                ),
-                                isError = splitError,
-                                supportingText = { Text(stringResource(R.string.split_months_helper)) }
-                            )
-                        }
-                        if (scheduleType == ScheduleType.RECURRING) {
-                            val recurringError = recurringMonths.toIntOrNull()?.let { it < 0 } ?: true
-                            OutlinedTextField(
-                                value = recurringMonths,
-                                onValueChange = { recurringMonths = it.filter { ch -> ch.isDigit() } },
-                                label = { Text(stringResource(R.string.recurring_months_label)) },
-                                modifier = Modifier.fillMaxWidth(),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Next
-                                ),
-                                isError = recurringError,
-                                supportingText = { Text(stringResource(R.string.recurring_months_helper)) }
-                            )
-                        }
-                    }
 
-                    if (categoriesForType.isNotEmpty()) {
-                        Text(stringResource(R.string.category), style = MaterialTheme.typography.titleSmall)
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            categoriesForType.forEach { cat ->
-                                FilterChip(
-                                    selected = category.equals(cat, ignoreCase = true),
-                                    onClick = { category = cat },
-                                    label = { Text(cat) },
-                                    colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                                    )
-                                )
-                            }
-                        }
-                        if (
-                            selectedType == TxType.EXPENSE &&
-                            category.isNotBlank() &&
-                            categoriesForType.none { it.equals(category, ignoreCase = true) }
-                        ) {
-                            OutlinedTextField(
-                                value = category,
-                                onValueChange = { category = it },
-                                label = { Text(stringResource(R.string.category)) },
-                                modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                        if (!savingsEnabled) {
+                            Text(
+                                text = stringResource(R.string.savings_goal_missing_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                    } else {
-                        OutlinedTextField(
-                            value = category,
-                            onValueChange = { category = it },
-                            label = { Text(stringResource(R.string.category)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
+
+                        if (savingsEnabled) {
+                            var goalsExpanded by remember { mutableStateOf(false) }
+                            val selectedGoalName = savingsGoals.firstOrNull { it.id == selectedGoalId }?.name.orEmpty()
+                            ExposedDropdownMenuBox(
+                                expanded = goalsExpanded,
+                                onExpandedChange = { goalsExpanded = !goalsExpanded }
+                            ) {
+                                OutlinedTextField(
+                                    value = if (selectedGoalName.isBlank()) {
+                                        stringResource(R.string.savings_goal_picker_placeholder)
+                                    } else {
+                                        selectedGoalName
+                                    },
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text(stringResource(R.string.savings_goal_picker_label)) },
+                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(goalsExpanded) },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .menuAnchor()
+                                )
+                                ExposedDropdownMenu(
+                                    expanded = goalsExpanded,
+                                    onDismissRequest = { goalsExpanded = false }
+                                ) {
+                                    savingsGoals.forEach { goal ->
+                                        DropdownMenuItem(
+                                            text = { Text(goal.name) },
+                                            onClick = {
+                                                selectedGoalId = goal.id
+                                                goalsExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+
+                            val savingsImpactError = savingsImpactInput.isNotEmpty() &&
+                                (savingsImpactInput.replace(',', '.').toDoubleOrNull()?.let { it <= 0.0 } != false)
+
+                            OutlinedTextField(
+                                value = savingsImpactInput,
+                                onValueChange = { input ->
+                                    savingsImpactInput = input.filter { it.isDigit() || it == '.' || it == ',' }
+                                },
+                                label = { Text(stringResource(R.string.savings_amount_label)) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                                isError = savingsImpactError,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Decimal,
+                                    imeAction = ImeAction.Done
+                                ),
+                                supportingText = {
+                                    Text(stringResource(R.string.savings_amount_helper))
+                                },
+                                suffix = { Text(currency) }
+                            )
+                        }
                     }
 
                     OutlinedTextField(
@@ -537,7 +649,7 @@ fun AddEditTransactionScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if (selectedType == TxType.EXPENSE) {
+                if (!isSavingsTab && selectedType == TxType.EXPENSE) {
                     Button(
                         onClick = { handleTransactionSave(TxType.EXPENSE) },
                         enabled = formValid,
@@ -546,7 +658,7 @@ fun AddEditTransactionScreen(
                         Text(stringResource(R.string.save_expense_transaction))
                     }
                 }
-                if (selectedType == TxType.INCOME) {
+                if (!isSavingsTab && selectedType == TxType.INCOME) {
                     Button(
                         onClick = { handleTransactionSave(TxType.INCOME) },
                         enabled = formValid,
@@ -555,157 +667,17 @@ fun AddEditTransactionScreen(
                         Text(stringResource(R.string.save_income_transaction))
                     }
                 }
-            }
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                shape = cardShape
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.savings_contribution_label),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                if (isSavingsTab) {
+                    Button(
+                        onClick = { handleSavingsEntrySave() },
+                        enabled = canSaveSavingsEntry,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = stringResource(R.string.apply_to_savings_label),
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                        Switch(
-                            checked = applyToSavings && savingsEnabled,
-                            onCheckedChange = { checked ->
-                                if (savingsEnabled) {
-                                    applyToSavings = checked
-                                    if (!checked) {
-                                        selectedGoalId = null
-                                        savingsImpactInput = ""
-                                    }
-                                }
-                            },
-                            enabled = savingsEnabled,
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colorScheme.primary
-                            )
-                        )
-                    }
-
-                    if (!savingsEnabled) {
-                        Text(
-                            text = stringResource(R.string.savings_goal_missing_hint),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    if (applyToSavings && savingsEnabled) {
-                        var goalsExpanded by remember { mutableStateOf(false) }
-                        val selectedGoalName = savingsGoals.firstOrNull { it.id == selectedGoalId }?.name.orEmpty()
-                        ExposedDropdownMenuBox(
-                            expanded = goalsExpanded,
-                            onExpandedChange = { goalsExpanded = !goalsExpanded }
-                        ) {
-                            OutlinedTextField(
-                                value = if (selectedGoalName.isBlank()) {
-                                    stringResource(R.string.savings_goal_picker_placeholder)
-                                } else {
-                                    selectedGoalName
-                                },
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text(stringResource(R.string.savings_goal_picker_label)) },
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(goalsExpanded) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
-                            )
-                            ExposedDropdownMenu(
-                                expanded = goalsExpanded,
-                                onDismissRequest = { goalsExpanded = false }
-                            ) {
-                                savingsGoals.forEach { goal ->
-                                    DropdownMenuItem(
-                                        text = { Text(goal.name) },
-                                        onClick = {
-                                            selectedGoalId = goal.id
-                                            goalsExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        val savingsImpactError = savingsImpactInput.isNotEmpty() &&
-                            (savingsImpactInput.replace(',', '.').toDoubleOrNull()?.let { it <= 0.0 } != false)
-
-                        OutlinedTextField(
-                            value = savingsImpactInput,
-                            onValueChange = { input ->
-                                savingsImpactInput = input.filter { it.isDigit() || it == '.' || it == ',' }
-                            },
-                            label = { Text(stringResource(R.string.savings_amount_label)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            isError = savingsImpactError,
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Decimal,
-                                imeAction = ImeAction.Done
-                            ),
-                            supportingText = {
-                                Text(stringResource(R.string.savings_amount_helper))
-                            },
-                            suffix = { Text(currency) }
-                        )
+                        Text(stringResource(R.string.save_savings_entry))
                     }
                 }
             }
-
-            if (showSavingsEntryButton) {
-                Button(
-                    onClick = { handleSavingsEntrySave() },
-                    enabled = canSaveSavingsEntry,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(R.string.save_savings_entry))
-                }
-            }
-
         }
-    }
-}
-
-private fun buildSplitTransactions(base: Transaction, months: Int, totalImpact: Double): List<Transaction> {
-    val safeMonths = months.coerceAtLeast(2)
-    val amountSplits = distributeAmountEvenly(base.amount, safeMonths)
-    val impactSplits = if (base.savingsGoalId != null && totalImpact != 0.0) {
-        distributeAmountEvenly(totalImpact, safeMonths)
-    } else {
-        List(safeMonths) { 0.0 }
-    }
-    val now = System.currentTimeMillis()
-    return (0 until safeMonths).map { index ->
-        val date = addMonthsToDate(base.dateUtcMillis, index)
-        val transactionId = if (index == 0) base.id else newTxId()
-        base.copy(
-            id = transactionId,
-            amount = amountSplits[index],
-            dateUtcMillis = date,
-            monthKey = monthKey(date),
-            planned = true,
-            updatedAtLocal = now,
-            savingsImpact = if (base.savingsGoalId != null) impactSplits[index] else 0.0
-        )
     }
 }
 
@@ -730,20 +702,6 @@ private fun buildRecurringTransactions(
     }
 }
 
-private fun distributeAmountEvenly(total: Double, parts: Int): List<Double> {
-    if (parts <= 1) return listOf(BigDecimal.valueOf(total).setScale(2, RoundingMode.HALF_UP).toDouble())
-    val totalBd = BigDecimal.valueOf(total).setScale(2, RoundingMode.HALF_UP)
-    val partsBd = BigDecimal.valueOf(parts.toLong())
-    val base = totalBd.divide(partsBd, 2, RoundingMode.HALF_UP)
-    val amounts = MutableList(parts) { base }
-    val allocated = base.multiply(partsBd).setScale(2, RoundingMode.HALF_UP)
-    val diff = totalBd.subtract(allocated)
-    if (diff.compareTo(BigDecimal.ZERO) != 0) {
-        amounts[0] = amounts[0].add(diff)
-    }
-    return amounts.map { it.toDouble() }
-}
-
 private fun addMonthsToDate(dateMillis: Long, offset: Int): Long {
     val cal = Calendar.getInstance().apply {
         timeInMillis = dateMillis
@@ -751,18 +709,6 @@ private fun addMonthsToDate(dateMillis: Long, offset: Int): Long {
     }
     return cal.timeInMillis
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

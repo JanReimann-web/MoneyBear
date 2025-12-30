@@ -82,6 +82,7 @@
     <string name="per_day_amount">%1$d %2$s/day</string>
     <string name="no_budget_set">Set a monthly budget in Settings to unlock this view.</string>
     <string name="chart_expense_categories_title">Expenses by category</string>
+    <string name="chart_income_categories_title">Income by category</string>
     <string name="chart_cashflow_title">Net cashflow outlook</string>
     <string name="balance_chart_title">Cash balance outlook</string>
     <string name="balance_chart_setup_hint">Add a balance baseline in Settings to unlock this chart.</string>
@@ -105,8 +106,12 @@
     <string name="user_avatar_cd">Open settings</string>
     <string name="chart_no_data_hint">Not enough data yet.</string>
     <string name="view_chart_details">View full chart</string>
+    <string name="chart_show_income">Show income</string>
+    <string name="chart_show_expenses">Show expenses</string>
     <string name="chart_tab_chart">Chart</string>
     <string name="chart_tab_table">Table</string>
+    <string name="chart_legend_show_more">Show %1$d more categories</string>
+    <string name="chart_legend_show_less">Show fewer categories</string>
     <string name="open_settings">Open settings</string>
     <string name="close">Close</string>
     <string name="view_transaction_history">View transaction history</string>
@@ -129,6 +134,8 @@
     <string name="recurring_months_helper">Creates identical transactions for upcoming months.</string>
     <string name="input_invalid_integer">Enter a whole number greater than %1$d.</string>
     <string name="savings_section_title">Savings</string>
+    <string name="savings_direction_add">Add</string>
+    <string name="savings_direction_withdraw">Withdraw</string>
     <string name="savings_goal_label">Savings goal</string>
     <string name="savings_goal_helper">Set how much you would like to save in total.</string>
     <string name="save_savings_goal">Save goal</string>
@@ -167,11 +174,11 @@
     <string name="gamification_title">Motivation</string>
     <string name="gamification_badges_summary">%1$d / %2$d badges unlocked</string>
     <string name="badge_budget_guardian">Budget guardian</string>
-    <string name="badge_budget_guardian_desc">Stayed under 90% of this month&#8217;s budget.</string>
+    <string name="badge_budget_guardian_desc">Stayed under 90%% of this month&#8217;s budget.</string>
     <string name="badge_savings_starter">Savings starter</string>
-    <string name="badge_savings_starter_desc">Reached 25% of your savings goal.</string>
+    <string name="badge_savings_starter_desc">Reached 25%% of your savings goal.</string>
     <string name="badge_savings_champion">Savings champion</string>
-    <string name="badge_savings_champion_desc">Reached 75% of your savings goal.</string>
+    <string name="badge_savings_champion_desc">Reached 75%% of your savings goal.</string>
     <string name="badge_future_planner">Future planner</string>
     <string name="badge_future_planner_desc">Scheduled upcoming transactions.</string>
     <string name="badge_net_positive">Net positive</string>
@@ -189,12 +196,14 @@
     <string name="theme_dark_label">Dark mode</string>
     <string name="theme_light_label">Light mode</string>
     <string name="theme_toggle_hint">Switch between dark and light themes.</string>
+    <string name="background_color_label">Background</string>
     <string name="accent_color_label">Accent color</string>
     <string name="accent_teal_label">Teal</string>
     <string name="accent_orange_label">Orange</string>
     <string name="accent_blue_label">Blue</string>
     <string name="accent_purple_label">Purple</string>
     <string name="accent_green_label">Green</string>
+    <string name="accent_black_label">Black</string>
     <string name="log_out">Log Out</string>
 
     <!-- Paywall -->
