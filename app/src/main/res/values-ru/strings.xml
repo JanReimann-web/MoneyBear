@@ -150,7 +150,7 @@
     <string name="gamification_title">Мотивация</string>
     <string name="gamification_badges_summary">Открыто %1$d из %2$d значков</string>
     <string name="badge_budget_guardian">Хранитель бюджета</string>
-    <string name="badge_budget_guardian_desc">Оставались ниже 90% бюджета этого месяца.</string>
+    <string name="badge_budget_guardian_desc">Оставались ниже 90%% бюджета этого месяца.</string>
     <string name="badge_savings_starter">Старт накоплений</string>
     <string name="badge_savings_starter_desc">Достигли 25% цели накоплений.</string>
     <string name="badge_savings_champion">Чемпион накоплений</string>

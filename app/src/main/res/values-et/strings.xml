@@ -150,7 +150,7 @@
     <string name="gamification_title">Motivatsioon</string>
     <string name="gamification_badges_summary">%1$d / %2$d märki avatud</string>
     <string name="badge_budget_guardian">Eelarve valvur</string>
-    <string name="badge_budget_guardian_desc">Jäid selle kuu eelarve alla 90%.</string>
+    <string name="badge_budget_guardian_desc">Jäid selle kuu eelarve alla 90%%.</string>
     <string name="badge_savings_starter">Kogumise algataja</string>
     <string name="badge_savings_starter_desc">Jõudsid 25% kogumise eesmärgist.</string>
     <string name="badge_savings_champion">Kogumise meister</string>

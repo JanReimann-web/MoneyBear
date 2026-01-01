@@ -150,7 +150,7 @@
     <string name="gamification_title">Motivaatio</string>
     <string name="gamification_badges_summary">%1$d / %2$d merkkiä avattu</string>
     <string name="badge_budget_guardian">Budjettivahti</string>
-    <string name="badge_budget_guardian_desc">Pysyi alle 90% tämän kuun budjetista.</string>
+    <string name="badge_budget_guardian_desc">Pysyi alle 90%% tämän kuun budjetista.</string>
     <string name="badge_savings_starter">Säästön aloittaja</string>
     <string name="badge_savings_starter_desc">Saavutti 25% säästötavoitteesta.</string>
     <string name="badge_savings_champion">Säästömestari</string>

@@ -150,7 +150,7 @@
     <string name="gamification_title">Motyvacija</string>
     <string name="gamification_badges_summary">Atrakinta %1$d iš %2$d ženklelių</string>
     <string name="badge_budget_guardian">Biudžeto sargas</string>
-    <string name="badge_budget_guardian_desc">Išlaidos buvo mažesnės nei 90% šio mėnesio biudžeto.</string>
+    <string name="badge_budget_guardian_desc">Išlaidos buvo mažesnės nei 90%% šio mėnesio biudžeto.</string>
     <string name="badge_savings_starter">Taupymo pradžia</string>
     <string name="badge_savings_starter_desc">Pasiekė 25% taupymo tikslo.</string>
     <string name="badge_savings_champion">Taupymo čempionas</string>

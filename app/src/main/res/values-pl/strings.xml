@@ -150,7 +150,7 @@
     <string name="gamification_title">Motywacja</string>
     <string name="gamification_badges_summary">%1$d / %2$d odznak odblokowano</string>
     <string name="badge_budget_guardian">Strażnik budżetu</string>
-    <string name="badge_budget_guardian_desc">Pozostał poniżej 90% budżetu w tym miesiącu.</string>
+    <string name="badge_budget_guardian_desc">Pozostał poniżej 90%% budżetu w tym miesiącu.</string>
     <string name="badge_savings_starter">Start oszczędzania</string>
     <string name="badge_savings_starter_desc">Osiągnął 25% celu oszczędności.</string>
     <string name="badge_savings_champion">Mistrz oszczędzania</string>

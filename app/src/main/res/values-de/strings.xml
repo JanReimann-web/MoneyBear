@@ -150,7 +150,7 @@
     <string name="gamification_title">Motivation</string>
     <string name="gamification_badges_summary">%1$d / %2$d Abzeichen freigeschaltet</string>
     <string name="badge_budget_guardian">Budgetwächter</string>
-    <string name="badge_budget_guardian_desc">Unter 90% des Monatsbudgets geblieben.</string>
+    <string name="badge_budget_guardian_desc">Unter 90%% des Monatsbudgets geblieben.</string>
     <string name="badge_savings_starter">Sparstarter</string>
     <string name="badge_savings_starter_desc">25% des Sparziels erreicht.</string>
     <string name="badge_savings_champion">Sparchampion</string>

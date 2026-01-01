@@ -150,7 +150,7 @@
     <string name="gamification_title">Motivation</string>
     <string name="gamification_badges_summary">%1$d / %2$d mærker låst op</string>
     <string name="badge_budget_guardian">Budgetvogter</string>
-    <string name="badge_budget_guardian_desc">Holdt sig under 90% af denne måneds budget.</string>
+    <string name="badge_budget_guardian_desc">Holdt sig under 90%% af denne måneds budget.</string>
     <string name="badge_savings_starter">Opsparingsstarter</string>
     <string name="badge_savings_starter_desc">Nåede 25% af opsparingsmålet.</string>
     <string name="badge_savings_champion">Opsparingsmester</string>

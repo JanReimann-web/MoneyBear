@@ -150,7 +150,7 @@
     <string name="gamification_title">Motivācija</string>
     <string name="gamification_badges_summary">Atbloķēti %1$d no %2$d žetoniem</string>
     <string name="badge_budget_guardian">Budžeta sargs</string>
-    <string name="badge_budget_guardian_desc">Palika zem 90% no šī mēneša budžeta.</string>
+    <string name="badge_budget_guardian_desc">Palika zem 90%% no šī mēneša budžeta.</string>
     <string name="badge_savings_starter">Uzkrājumu sākums</string>
     <string name="badge_savings_starter_desc">Sasniedza 25% no uzkrājuma mērķa.</string>
     <string name="badge_savings_champion">Uzkrājumu čempions</string>

@@ -173,7 +173,7 @@
     <string name="gamification_title">Motivation</string>
     <string name="gamification_badges_summary">%1$d / %2$d badges unlocked</string>
     <string name="badge_budget_guardian">Budget guardian</string>
-    <string name="badge_budget_guardian_desc">Stayed under 90% of this month&#8217;s budget.</string>
+    <string name="badge_budget_guardian_desc">Stayed under 90%% of this month&#8217;s budget.</string>
     <string name="badge_savings_starter">Savings starter</string>
     <string name="badge_savings_starter_desc">Reached 25% of your savings goal.</string>
     <string name="badge_savings_champion">Savings champion</string>
