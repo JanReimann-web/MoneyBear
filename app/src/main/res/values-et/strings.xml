@@ -152,9 +152,9 @@
     <string name="badge_budget_guardian">Eelarve valvur</string>
     <string name="badge_budget_guardian_desc">Jäid selle kuu eelarve alla 90%%.</string>
     <string name="badge_savings_starter">Kogumise algataja</string>
-    <string name="badge_savings_starter_desc">Jõudsid 25% kogumise eesmärgist.</string>
+    <string name="badge_savings_starter_desc">Jõudsid 25%% kogumise eesmärgist.</string>
     <string name="badge_savings_champion">Kogumise meister</string>
-    <string name="badge_savings_champion_desc">Jõudsid 75% kogumise eesmärgist.</string>
+    <string name="badge_savings_champion_desc">Jõudsid 75%% kogumise eesmärgist.</string>
     <string name="badge_future_planner">Tuleviku planeerija</string>
     <string name="badge_future_planner_desc">Planeerisid tulevased tehingud.</string>
     <string name="badge_net_positive">Netopositiivne</string>

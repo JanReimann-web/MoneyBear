@@ -152,9 +152,9 @@
     <string name="badge_budget_guardian">Budgetvogter</string>
     <string name="badge_budget_guardian_desc">Holdt sig under 90%% af denne måneds budget.</string>
     <string name="badge_savings_starter">Opsparingsstarter</string>
-    <string name="badge_savings_starter_desc">Nåede 25% af opsparingsmålet.</string>
+    <string name="badge_savings_starter_desc">Nåede 25%% af opsparingsmålet.</string>
     <string name="badge_savings_champion">Opsparingsmester</string>
-    <string name="badge_savings_champion_desc">Nåede 75% af opsparingsmålet.</string>
+    <string name="badge_savings_champion_desc">Nåede 75%%S af opsparingsmålet.</string>
     <string name="badge_future_planner">Fremtidsplanlægger</string>
     <string name="badge_future_planner_desc">Planlagde kommende transaktioner.</string>
     <string name="badge_net_positive">Netto positiv</string>

@@ -152,9 +152,9 @@
     <string name="badge_budget_guardian">Strażnik budżetu</string>
     <string name="badge_budget_guardian_desc">Pozostał poniżej 90%% budżetu w tym miesiącu.</string>
     <string name="badge_savings_starter">Start oszczędzania</string>
-    <string name="badge_savings_starter_desc">Osiągnął 25% celu oszczędności.</string>
+    <string name="badge_savings_starter_desc">Osiągnął 25%% celu oszczędności.</string>
     <string name="badge_savings_champion">Mistrz oszczędzania</string>
-    <string name="badge_savings_champion_desc">Osiągnął 75% celu oszczędności.</string>
+    <string name="badge_savings_champion_desc">Osiągnął 75%% celu oszczędności.</string>
     <string name="badge_future_planner">Planista przyszłości</string>
     <string name="badge_future_planner_desc">Zaplanował nadchodzące transakcje.</string>
     <string name="badge_net_positive">Netto na plus</string>

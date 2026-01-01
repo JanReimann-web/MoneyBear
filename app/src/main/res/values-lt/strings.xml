@@ -152,9 +152,9 @@
     <string name="badge_budget_guardian">Biudžeto sargas</string>
     <string name="badge_budget_guardian_desc">Išlaidos buvo mažesnės nei 90%% šio mėnesio biudžeto.</string>
     <string name="badge_savings_starter">Taupymo pradžia</string>
-    <string name="badge_savings_starter_desc">Pasiekė 25% taupymo tikslo.</string>
+    <string name="badge_savings_starter_desc">Pasiekė 25%% taupymo tikslo.</string>
     <string name="badge_savings_champion">Taupymo čempionas</string>
-    <string name="badge_savings_champion_desc">Pasiekė 75% taupymo tikslo.</string>
+    <string name="badge_savings_champion_desc">Pasiekė 75%% taupymo tikslo.</string>
     <string name="badge_future_planner">Ateities planuotojas</string>
     <string name="badge_future_planner_desc">Suplanavo būsimas operacijas.</string>
     <string name="badge_net_positive">Teigiamas balansas</string>

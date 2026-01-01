@@ -152,9 +152,9 @@
     <string name="badge_budget_guardian">Хранитель бюджета</string>
     <string name="badge_budget_guardian_desc">Оставались ниже 90%% бюджета этого месяца.</string>
     <string name="badge_savings_starter">Старт накоплений</string>
-    <string name="badge_savings_starter_desc">Достигли 25% цели накоплений.</string>
+    <string name="badge_savings_starter_desc">Достигли 25%% цели накоплений.</string>
     <string name="badge_savings_champion">Чемпион накоплений</string>
-    <string name="badge_savings_champion_desc">Достигли 75% цели накоплений.</string>
+    <string name="badge_savings_champion_desc">Достигли 75%% цели накоплений.</string>
     <string name="badge_future_planner">Планировщик будущего</string>
     <string name="badge_future_planner_desc">Запланировали предстоящие операции.</string>
     <string name="badge_net_positive">Положительный баланс</string>

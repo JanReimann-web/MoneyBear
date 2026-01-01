@@ -152,9 +152,9 @@
     <string name="badge_budget_guardian">Budžeta sargs</string>
     <string name="badge_budget_guardian_desc">Palika zem 90%% no šī mēneša budžeta.</string>
     <string name="badge_savings_starter">Uzkrājumu sākums</string>
-    <string name="badge_savings_starter_desc">Sasniedza 25% no uzkrājuma mērķa.</string>
+    <string name="badge_savings_starter_desc">Sasniedza 25%% no uzkrājuma mērķa.</string>
     <string name="badge_savings_champion">Uzkrājumu čempions</string>
-    <string name="badge_savings_champion_desc">Sasniedza 75% no uzkrājuma mērķa.</string>
+    <string name="badge_savings_champion_desc">Sasniedza 75%% no uzkrājuma mērķa.</string>
     <string name="badge_future_planner">Nākotnes plānotājs</string>
     <string name="badge_future_planner_desc">Ieplānoja nākamos darījumus.</string>
     <string name="badge_net_positive">Pozitīva bilance</string>

@@ -175,9 +175,9 @@
     <string name="badge_budget_guardian">Budget guardian</string>
     <string name="badge_budget_guardian_desc">Stayed under 90%% of this month&#8217;s budget.</string>
     <string name="badge_savings_starter">Savings starter</string>
-    <string name="badge_savings_starter_desc">Reached 25% of your savings goal.</string>
+    <string name="badge_savings_starter_desc">Reached 25%% of your savings goal.</string>
     <string name="badge_savings_champion">Savings champion</string>
-    <string name="badge_savings_champion_desc">Reached 75% of your savings goal.</string>
+    <string name="badge_savings_champion_desc">Reached 75%% of your savings goal.</string>
     <string name="badge_future_planner">Future planner</string>
     <string name="badge_future_planner_desc">Scheduled upcoming transactions.</string>
     <string name="badge_net_positive">Net positive</string>
