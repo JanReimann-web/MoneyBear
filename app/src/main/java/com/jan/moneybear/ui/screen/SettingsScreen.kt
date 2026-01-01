@@ -24,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -50,7 +51,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Slider
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -73,8 +75,8 @@ import androidx.compose.ui.window.Dialog
 import com.jan.moneybear.MoneyBearApp
 import com.jan.moneybear.R
 import com.jan.moneybear.data.store.SavingsGoal
-import com.jan.moneybear.domain.DEFAULT_EXPENSE_CATEGORIES
-import com.jan.moneybear.domain.DEFAULT_INCOME_CATEGORIES
+import com.jan.moneybear.domain.defaultExpenseCategories
+import com.jan.moneybear.domain.defaultIncomeCategories
 import com.jan.moneybear.ui.components.MoneyBearTopBarTitle
 import com.jan.moneybear.ui.theme.AccentBlack
 import com.jan.moneybear.ui.theme.AccentBlue
@@ -95,7 +97,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -119,11 +120,13 @@ fun SettingsScreen(
     val savingsGoals by settingsStore.savingsGoals.collectAsState(initial = emptyList())
     val savingsBalances by transactionRepository.savingsBalances().collectAsState(initial = emptyMap())
     val balanceBaseline by settingsStore.balanceBaseline.collectAsState(initial = null)
+    val defaultExpense = defaultExpenseCategories(context)
+    val defaultIncome = defaultIncomeCategories(context)
     val expenseCategories by settingsStore.expenseCategories.collectAsState(
-        initial = DEFAULT_EXPENSE_CATEGORIES
+        initial = defaultExpense
     )
     val incomeCategories by settingsStore.incomeCategories.collectAsState(
-        initial = DEFAULT_INCOME_CATEGORIES
+        initial = defaultIncome
     )
 
     var langExpanded by remember { mutableStateOf(false) }
@@ -146,6 +149,7 @@ fun SettingsScreen(
     var goalPendingDeletion by remember { mutableStateOf<SavingsGoal?>(null) }
     var categoryPendingDeletion by remember { mutableStateOf<CategoryDeletionRequest?>(null) }
     val scrollState = rememberScrollState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val languages = remember {
         listOf(
@@ -228,6 +232,12 @@ fun SettingsScreen(
         }
     }
 
+    fun showSnack(messageRes: Int) {
+        scope.launch {
+            snackbarHostState.showSnackbar(context.getString(messageRes))
+        }
+    }
+
     fun persistBudget() {
         val parsed = budgetInput.replace(',', '.').toDoubleOrNull()
         scope.launch {
@@ -236,6 +246,7 @@ fun SettingsScreen(
             } else {
                 settingsStore.setBudgetMonthly(null)
             }
+            showSnack(R.string.snackbar_saved)
         }
     }
 
@@ -253,6 +264,7 @@ fun SettingsScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -360,13 +372,6 @@ fun SettingsScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
-                Button(
-                    onClick = { if (!budgetError) persistBudget() },
-                    enabled = !budgetError,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(R.string.save_budget))
-                }
                 ExposedDropdownMenuBox(
                     expanded = startDayExpanded,
                     onExpandedChange = { startDayExpanded = !startDayExpanded }
@@ -406,6 +411,13 @@ fun SettingsScreen(
                         }
                     }
                 }
+                Button(
+                    onClick = { if (!budgetError) persistBudget() },
+                    enabled = !budgetError,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.save_budget))
+                }
             }
 
             SettingsSectionCard(titleRes = R.string.balance_baseline_section_title) {
@@ -442,6 +454,7 @@ fun SettingsScreen(
                         if (parsedAmount != null && date != null) {
                             scope.launch {
                                 settingsStore.setBalanceBaseline(abs(parsedAmount), date)
+                                showSnack(R.string.snackbar_saved)
                             }
                         }
                     },
@@ -538,6 +551,7 @@ fun SettingsScreen(
                                 newSavingsGoalName = ""
                                 newSavingsGoalTarget = ""
                                 newSavingsGoalDeadline = null
+                                showSnack(R.string.snackbar_saved)
                             }
                         }
                     },
@@ -722,6 +736,7 @@ fun SettingsScreen(
                 scope.launch {
                     settingsStore.updateSavingsGoal(goal.id, name, target, deadline)
                     goalBeingEdited = null
+                    showSnack(R.string.snackbar_saved)
                 }
             }
         )
@@ -732,6 +747,7 @@ fun SettingsScreen(
             goal = goal,
             onConfirm = {
                 scope.launch {
+                    transactionRepository.removeSavingsGoalData(goal.id)
                     settingsStore.deleteSavingsGoal(goal.id)
                     goalPendingDeletion = null
                 }
@@ -784,7 +800,10 @@ private fun SavingsGoalRow(
     val safeBalance = balance.coerceAtLeast(0.0)
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Column(
             modifier = Modifier
@@ -1098,44 +1117,31 @@ private fun ColorSlider(
 ) {
     if (options.isEmpty()) return
     val activeId = if (options.any { it.id == selectedId }) selectedId else options.first().id
-    val selectedIndex = options.indexOfFirst { it.id == activeId }.coerceAtLeast(0)
-    Column(
+    Row(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            options.forEach { option ->
-                val isSelected = option.id == activeId
-                val borderColor = if (isSelected) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                }
-                val borderWidth = if (isSelected) 2.dp else 1.dp
-                Box(
-                    modifier = Modifier
-                        .size(26.dp)
-                        .clip(CircleShape)
-                        .background(option.color)
-                        .border(borderWidth, borderColor, CircleShape)
-                )
+        options.forEach { option ->
+            val isSelected = option.id == activeId
+            val borderColor = if (isSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
             }
+            val borderWidth = if (isSelected) 2.dp else 1.dp
+            val size = if (isSelected) 30.dp else 24.dp
+            Box(
+                modifier = Modifier
+                    .size(size)
+                    .clip(CircleShape)
+                    .background(option.color)
+                    .border(borderWidth, borderColor, CircleShape)
+                    .clickable {
+                        if (!isSelected) onSelected(option.id)
+                    }
+            )
         }
-        Slider(
-            value = selectedIndex.toFloat(),
-            onValueChange = { value ->
-                val index = value.roundToInt().coerceIn(0, options.lastIndex)
-                val next = options[index].id
-                if (next != activeId) onSelected(next)
-            },
-            valueRange = 0f..options.lastIndex.toFloat(),
-            steps = (options.size - 2).coerceAtLeast(0),
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 

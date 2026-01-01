@@ -116,7 +116,6 @@
     <string name="savings_goal_label">Säästötavoite</string>
     <string name="savings_goal_helper">Aseta, kuinka paljon haluat säästää yhteensä.</string>
     <string name="save_savings_goal">Tallenna tavoite</string>
-    <string name="savings_contribution_label">Lisää säästöihin</string>
     <string name="savings_contribution_helper">Seuraa talletuksia tai siirtoja säästöihin.</string>
     <string name="add_savings">Lisää</string>
     <string name="reset_savings">Nollaa eteneminen</string>
@@ -151,11 +150,11 @@
     <string name="gamification_title">Motivaatio</string>
     <string name="gamification_badges_summary">%1$d / %2$d merkkiä avattu</string>
     <string name="badge_budget_guardian">Budjettivahti</string>
-    <string name="badge_budget_guardian_desc">Pysyi alle 90 %% tämän kuun budjetista.</string>
+    <string name="badge_budget_guardian_desc">Pysyi alle 90% tämän kuun budjetista.</string>
     <string name="badge_savings_starter">Säästön aloittaja</string>
-    <string name="badge_savings_starter_desc">Saavutti 25 %% säästötavoitteesta.</string>
+    <string name="badge_savings_starter_desc">Saavutti 25% säästötavoitteesta.</string>
     <string name="badge_savings_champion">Säästömestari</string>
-    <string name="badge_savings_champion_desc">Saavutti 75 %% säästötavoitteesta.</string>
+    <string name="badge_savings_champion_desc">Saavutti 75% säästötavoitteesta.</string>
     <string name="badge_future_planner">Tulevaisuuden suunnittelija</string>
     <string name="badge_future_planner_desc">Ajoitti tulevia tapahtumia.</string>
     <string name="badge_net_positive">Netto plussalla</string>
@@ -165,7 +164,7 @@
     <string name="monthly_budget_label">Kuukausibudjetin summa</string>
     <string name="monthly_budget_error">Syötä kelvollinen numero (esim. 250.00)</string>
     <string name="save_budget">Tallenna budjetti</string>
-    <string name="appearance_section_title">Ulkoasu ja personointi</string>
+    <string name="appearance_section_title">Ulkoasu</string>
     <string name="budget_cycle_start_label">Budjettijakso alkaa</string>
     <string name="budget_cycle_helper">Käytä tätä sovittaaksesi palkkapäivään kalenterikuukauden sijaan.</string>
     <string name="budget_cycle_day_first">Kuukauden ensimmäinen päivä</string>
@@ -186,4 +185,26 @@
     <string name="premium_features">Hanki rajattomat tapahtumat, edistynyt analytiikka ja pilvivarmuuskopio!</string>
     <string name="subscribe_premium">Tilaa - 0.99 € / kk</string>
     <string name="price_info">Peruuta milloin tahansa. Ei piilokuluja.</string>
+    <string-array name="default_expense_categories">
+        <item>Asuminen ja asumiskulut</item>
+        <item>Liikenne</item>
+        <item>Ruoka ja juoma</item>
+        <item>Terveys ja liikunta</item>
+        <item>Viihde</item>
+        <item>Koulutus ja kehitys</item>
+        <item>Matkustaminen</item>
+        <item>Perhe ja lapset</item>
+        <item>Ostokset ja palvelut</item>
+        <item>Lahjat ja lahjoitukset</item>
+        <item>Säästöt ja sijoitukset</item>
+        <item>Muut</item>
+    </string-array>
+    <string-array name="default_income_categories">
+        <item>Palkka</item>
+        <item>Bonus</item>
+        <item>Passiivinen tulo</item>
+        <item>Lahjat</item>
+        <item>Muut</item>
+    </string-array>
+    <string name="snackbar_saved">Tallennettu</string>
 </resources>

@@ -72,6 +72,12 @@ class TransactionRepository(
     fun savingsBalances(): Flow<Map<String, Double>> =
         dao.savingsBalances().map { rows -> rows.associate { it.goalId to it.balance } }
 
+    suspend fun removeSavingsGoalData(goalId: String) {
+        val now = System.currentTimeMillis()
+        dao.detachSavingsGoal(goalId, now)
+        dao.deleteSavingsEntries(goalId, now)
+    }
+
     suspend fun addOrUpdate(tx: Transaction) {
         val normalizedGoalId = tx.savingsGoalId?.takeIf { it.isNotBlank() }
         val normalizedImpact = if (normalizedGoalId == null) 0.0 else tx.savingsImpact

@@ -62,6 +62,38 @@ interface TransactionDao {
     )
     fun savingsBalances(): Flow<List<SavingsBalanceRow>>
 
+    @Query(
+        """
+        UPDATE transactions
+        SET
+            dirty = 1,
+            pendingOp = CASE
+                WHEN pendingOp = 'DELETE' THEN 'DELETE'
+                WHEN pendingOp = 'INSERT' THEN 'INSERT'
+                WHEN deleted = 1 THEN 'DELETE'
+                ELSE 'UPDATE'
+            END,
+            updatedAtLocal = :now,
+            savingsGoalId = NULL,
+            savingsImpact = 0.0
+        WHERE savingsGoalId = :goalId AND deleted = 0 AND amount != 0.0
+        """
+    )
+    suspend fun detachSavingsGoal(goalId: String, now: Long = System.currentTimeMillis())
+
+    @Query(
+        """
+        UPDATE transactions
+        SET
+            deleted = 1,
+            dirty = 1,
+            pendingOp = 'DELETE',
+            updatedAtLocal = :now
+        WHERE savingsGoalId = :goalId AND deleted = 0 AND amount = 0.0
+        """
+    )
+    suspend fun deleteSavingsEntries(goalId: String, now: Long = System.currentTimeMillis())
+
     @Query("SELECT COALESCE(SUM(amount), 0.0) FROM transactions WHERE monthKey = :month AND deleted = 0")
     fun sumMonth(month: String): Flow<Double>
 

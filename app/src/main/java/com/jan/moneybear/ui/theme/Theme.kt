@@ -143,7 +143,7 @@ private fun resolvePalette(themeMode: String): ThemePalette {
             onSurface = BlueTextPrimary,
             onSurfaceVariant = BlueTextSecondary,
             outline = BlueOutline,
-            isDark = false
+            isDark = true
         )
         "green", "dark" -> ThemePalette(
             background = DarkBackground,

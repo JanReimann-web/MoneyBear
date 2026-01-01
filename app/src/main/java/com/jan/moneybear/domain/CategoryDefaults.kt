@@ -1,24 +1,10 @@
 package com.jan.moneybear.domain
 
-val DEFAULT_EXPENSE_CATEGORIES = listOf(
-    "Eluase ja kommunaalid",
-    "Transport",
-    "Toit ja joogid",
-    "Tervis ja sport",
-    "Meelelahutus",
-    "Haridus ja areng",
-    "Reisimine",
-    "Pere ja lapsed",
-    "Ostud ja teenused",
-    "Kingitused ja annetused",
-    "Saastud ja investeeringud",
-    "Muu"
-)
+import android.content.Context
+import com.jan.moneybear.R
 
-val DEFAULT_INCOME_CATEGORIES = listOf(
-    "Palk",
-    "Bonus",
-    "Passiivne tulu",
-    "Kingitused",
-    "Muu"
-)
+fun defaultExpenseCategories(context: Context): List<String> =
+    context.resources.getStringArray(R.array.default_expense_categories).toList()
+
+fun defaultIncomeCategories(context: Context): List<String> =
+    context.resources.getStringArray(R.array.default_income_categories).toList()

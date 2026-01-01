@@ -103,8 +103,8 @@ import com.jan.moneybear.data.store.SavingsGoal
 import com.jan.moneybear.data.store.BalanceBaseline
 import kotlinx.coroutines.launch
 import com.jan.moneybear.domain.CategorySeriesEntry
-import com.jan.moneybear.domain.DEFAULT_EXPENSE_CATEGORIES
-import com.jan.moneybear.domain.DEFAULT_INCOME_CATEGORIES
+import com.jan.moneybear.domain.defaultExpenseCategories
+import com.jan.moneybear.domain.defaultIncomeCategories
 import com.jan.moneybear.domain.TransactionRepository
 import com.jan.moneybear.domain.addMonths
 import com.jan.moneybear.domain.monthKey
@@ -140,7 +140,8 @@ fun HomeScreen(
     onSettings: () -> Unit,
     onEditTransaction: (String) -> Unit
 ) {
-    val app = LocalContext.current.applicationContext as MoneyBearApp
+    val context = LocalContext.current
+    val app = context.applicationContext as MoneyBearApp
     val transactionRepository: TransactionRepository = app.transactionRepository
     val settingsStore = app.settingsStore
     val authRepository = app.authRepository
@@ -160,8 +161,10 @@ fun HomeScreen(
     val categoryQueryMonths = remember(currentMonth) { monthWindow(currentMonth, past = 24, future = 6) }
     var categoryChartType by rememberSaveable { mutableStateOf(TxType.EXPENSE) }
     val currency by settingsStore.currencyCode.collectAsState(initial = "EUR")
-    val expenseCategories by settingsStore.expenseCategories.collectAsState(initial = DEFAULT_EXPENSE_CATEGORIES)
-    val incomeCategories by settingsStore.incomeCategories.collectAsState(initial = DEFAULT_INCOME_CATEGORIES)
+    val defaultExpense = defaultExpenseCategories(context)
+    val defaultIncome = defaultIncomeCategories(context)
+    val expenseCategories by settingsStore.expenseCategories.collectAsState(initial = defaultExpense)
+    val incomeCategories by settingsStore.incomeCategories.collectAsState(initial = defaultIncome)
     val budget by settingsStore.budgetMonthly.collectAsState(initial = null)
     val budgetCycleStartDay by settingsStore.budgetCycleStartDay.collectAsState(initial = 1)
     val savingsGoals by settingsStore.savingsGoals.collectAsState(initial = emptyList())

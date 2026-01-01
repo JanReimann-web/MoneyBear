@@ -139,7 +139,6 @@
     <string name="savings_goal_label">Savings goal</string>
     <string name="savings_goal_helper">Set how much you would like to save in total.</string>
     <string name="save_savings_goal">Save goal</string>
-    <string name="savings_contribution_label">Add to savings</string>
     <string name="savings_contribution_helper">Track deposits or transfers into savings.</string>
     <string name="add_savings">Add</string>
     <string name="reset_savings">Reset progress</string>
@@ -156,7 +155,7 @@
     <string name="clear">Clear</string>
     <string name="edit_savings_goal">Edit goal</string>
     <string name="delete_savings_goal">Delete goal</string>
-    <string name="delete_savings_goal_confirm">Delete "%1$s"? Existing transactions stay untouched, but this goal&#8217;s progress will reset.</string>
+    <string name="delete_savings_goal_confirm">Delete "%1$s"? This also removes the saved progress and any linked savings entries.</string>
     <string name="transaction_options_title">What would you like to do?</string>
     <string name="edit_transaction">Edit transaction</string>
     <string name="delete_transaction">Delete transaction</string>
@@ -174,11 +173,11 @@
     <string name="gamification_title">Motivation</string>
     <string name="gamification_badges_summary">%1$d / %2$d badges unlocked</string>
     <string name="badge_budget_guardian">Budget guardian</string>
-    <string name="badge_budget_guardian_desc">Stayed under 90%% of this month&#8217;s budget.</string>
+    <string name="badge_budget_guardian_desc">Stayed under 90% of this month&#8217;s budget.</string>
     <string name="badge_savings_starter">Savings starter</string>
-    <string name="badge_savings_starter_desc">Reached 25%% of your savings goal.</string>
+    <string name="badge_savings_starter_desc">Reached 25% of your savings goal.</string>
     <string name="badge_savings_champion">Savings champion</string>
-    <string name="badge_savings_champion_desc">Reached 75%% of your savings goal.</string>
+    <string name="badge_savings_champion_desc">Reached 75% of your savings goal.</string>
     <string name="badge_future_planner">Future planner</string>
     <string name="badge_future_planner_desc">Scheduled upcoming transactions.</string>
     <string name="badge_net_positive">Net positive</string>
@@ -188,7 +187,7 @@
     <string name="monthly_budget_label">Monthly budget amount</string>
     <string name="monthly_budget_error">Enter a valid number (e.g. 250.00)</string>
     <string name="save_budget">Save budget</string>
-    <string name="appearance_section_title">Appearance &amp; personalization</string>
+    <string name="appearance_section_title">Appearance</string>
     <string name="budget_cycle_start_label">Budget cycle starts</string>
     <string name="budget_cycle_helper">Use this to match your payday instead of the calendar month.</string>
     <string name="budget_cycle_day_first">First day of month</string>
@@ -211,7 +210,29 @@
     <string name="premium_features">Get unlimited transactions, advanced analytics, and cloud backup!</string>
     <string name="subscribe_premium">Subscribe - 0.99 &#8364; / month</string>
     <string name="price_info">Cancel anytime. No hidden fees.</string>
+    <string name="snackbar_saved">Saved</string>
 
     <!-- Firebase (from google-services.json) -->
     <string name="default_web_client_id" translatable="false">233394488335-s6hadop4b9rlr7jhl3704104dlc6vr2m.apps.googleusercontent.com</string>
+    <string-array name="default_expense_categories">
+        <item>Housing and utilities</item>
+        <item>Transport</item>
+        <item>Food and drinks</item>
+        <item>Health and sports</item>
+        <item>Entertainment</item>
+        <item>Education and growth</item>
+        <item>Travel</item>
+        <item>Family and children</item>
+        <item>Shopping and services</item>
+        <item>Gifts and donations</item>
+        <item>Savings and investments</item>
+        <item>Other</item>
+    </string-array>
+    <string-array name="default_income_categories">
+        <item>Salary</item>
+        <item>Bonus</item>
+        <item>Passive income</item>
+        <item>Gifts</item>
+        <item>Other</item>
+    </string-array>
 </resources>

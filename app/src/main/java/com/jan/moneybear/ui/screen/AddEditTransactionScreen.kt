@@ -52,13 +52,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jan.moneybear.MoneyBearApp
 import com.jan.moneybear.R
 import com.jan.moneybear.data.local.Transaction
 import com.jan.moneybear.data.local.TxType
-import com.jan.moneybear.domain.DEFAULT_EXPENSE_CATEGORIES
-import com.jan.moneybear.domain.DEFAULT_INCOME_CATEGORIES
+import com.jan.moneybear.domain.defaultExpenseCategories
+import com.jan.moneybear.domain.defaultIncomeCategories
 import com.jan.moneybear.domain.TransactionRepository
 import com.jan.moneybear.domain.monthKey
 import com.jan.moneybear.domain.newTxId
@@ -98,11 +99,13 @@ fun AddEditTransactionScreen(
     val settingsStore = app.settingsStore
     val scope = rememberCoroutineScope()
 
+    val defaultExpense = defaultExpenseCategories(context)
+    val defaultIncome = defaultIncomeCategories(context)
     val expenseCategories by settingsStore.expenseCategories.collectAsState(
-        initial = DEFAULT_EXPENSE_CATEGORIES
+        initial = defaultExpense
     )
     val incomeCategories by settingsStore.incomeCategories.collectAsState(
-        initial = DEFAULT_INCOME_CATEGORIES
+        initial = defaultIncome
     )
     val savingsGoals by settingsStore.savingsGoals.collectAsState(initial = emptyList())
     val currency by settingsStore.currencyCode.collectAsState(initial = "EUR")
@@ -248,6 +251,8 @@ fun AddEditTransactionScreen(
                 ScheduleType.RECURRING -> recurringCountValue >= 0
             }
             val savingsImpactValue = savingsImpactInput.replace(',', '.').toDoubleOrNull()
+            val savingsImpactError = savingsImpactInput.isNotEmpty() &&
+                (savingsImpactInput.replace(',', '.').toDoubleOrNull()?.let { it <= 0.0 } != false)
             val trimmedCategory = category.trim()
             val categorySelected = if (categoriesForType.isEmpty()) {
                 trimmedCategory.isNotEmpty()
@@ -404,7 +409,14 @@ fun AddEditTransactionScreen(
                                         }
                                     }
                                 },
-                                text = { Text(label) }
+                                text = {
+                                    Text(
+                                        text = label,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        softWrap = false
+                                    )
+                                }
                             )
                         }
                     }
@@ -422,6 +434,25 @@ fun AddEditTransactionScreen(
                                 keyboardType = KeyboardType.Decimal,
                                 imeAction = ImeAction.Next
                             ),
+                            suffix = { Text(currency) }
+                        )
+                    } else {
+                        OutlinedTextField(
+                            value = savingsImpactInput,
+                            onValueChange = { input ->
+                                savingsImpactInput = input.filter { it.isDigit() || it == '.' || it == ',' }
+                            },
+                            label = { Text(stringResource(R.string.amount)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            isError = savingsImpactError,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Decimal,
+                                imeAction = ImeAction.Done
+                            ),
+                            supportingText = {
+                                Text(stringResource(R.string.savings_amount_helper))
+                            },
                             suffix = { Text(currency) }
                         )
                     }
@@ -536,11 +567,6 @@ fun AddEditTransactionScreen(
                             )
                         }
                     } else {
-                        Text(
-                            text = stringResource(R.string.savings_contribution_label),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -611,37 +637,9 @@ fun AddEditTransactionScreen(
                                 }
                             }
 
-                            val savingsImpactError = savingsImpactInput.isNotEmpty() &&
-                                (savingsImpactInput.replace(',', '.').toDoubleOrNull()?.let { it <= 0.0 } != false)
-
-                            OutlinedTextField(
-                                value = savingsImpactInput,
-                                onValueChange = { input ->
-                                    savingsImpactInput = input.filter { it.isDigit() || it == '.' || it == ',' }
-                                },
-                                label = { Text(stringResource(R.string.savings_amount_label)) },
-                                modifier = Modifier.fillMaxWidth(),
-                                singleLine = true,
-                                isError = savingsImpactError,
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Decimal,
-                                    imeAction = ImeAction.Done
-                                ),
-                                supportingText = {
-                                    Text(stringResource(R.string.savings_amount_helper))
-                                },
-                                suffix = { Text(currency) }
-                            )
                         }
                     }
 
-                    OutlinedTextField(
-                        value = note,
-                        onValueChange = { note = it },
-                        label = { Text(stringResource(R.string.note)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 3
-                    )
                 }
             }
 
@@ -709,7 +707,4 @@ private fun addMonthsToDate(dateMillis: Long, offset: Int): Long {
     }
     return cal.timeInMillis
 }
-
-
-
 

@@ -116,7 +116,6 @@
     <string name="savings_goal_label">Cel oszczędności</string>
     <string name="savings_goal_helper">Ustaw, ile chcesz zaoszczędzić łącznie.</string>
     <string name="save_savings_goal">Zapisz cel</string>
-    <string name="savings_contribution_label">Dodaj do oszczędności</string>
     <string name="savings_contribution_helper">Śledź wpłaty lub przelewy na oszczędności.</string>
     <string name="add_savings">Dodaj</string>
     <string name="reset_savings">Resetuj postęp</string>
@@ -151,11 +150,11 @@
     <string name="gamification_title">Motywacja</string>
     <string name="gamification_badges_summary">%1$d / %2$d odznak odblokowano</string>
     <string name="badge_budget_guardian">Strażnik budżetu</string>
-    <string name="badge_budget_guardian_desc">Pozostał poniżej 90%% budżetu w tym miesiącu.</string>
+    <string name="badge_budget_guardian_desc">Pozostał poniżej 90% budżetu w tym miesiącu.</string>
     <string name="badge_savings_starter">Start oszczędzania</string>
-    <string name="badge_savings_starter_desc">Osiągnął 25%% celu oszczędności.</string>
+    <string name="badge_savings_starter_desc">Osiągnął 25% celu oszczędności.</string>
     <string name="badge_savings_champion">Mistrz oszczędzania</string>
-    <string name="badge_savings_champion_desc">Osiągnął 75%% celu oszczędności.</string>
+    <string name="badge_savings_champion_desc">Osiągnął 75% celu oszczędności.</string>
     <string name="badge_future_planner">Planista przyszłości</string>
     <string name="badge_future_planner_desc">Zaplanował nadchodzące transakcje.</string>
     <string name="badge_net_positive">Netto na plus</string>
@@ -165,7 +164,7 @@
     <string name="monthly_budget_label">Kwota budżetu miesięcznego</string>
     <string name="monthly_budget_error">Wpisz poprawną liczbę (np. 250.00)</string>
     <string name="save_budget">Zapisz budżet</string>
-    <string name="appearance_section_title">Wygląd i personalizacja</string>
+    <string name="appearance_section_title">Wygląd</string>
     <string name="budget_cycle_start_label">Cykl budżetu zaczyna się</string>
     <string name="budget_cycle_helper">Użyj tego, aby dopasować do dnia wypłaty zamiast miesiąca kalendarzowego.</string>
     <string name="budget_cycle_day_first">Pierwszy dzień miesiąca</string>
@@ -186,4 +185,26 @@
     <string name="premium_features">Uzyskaj nielimitowane transakcje, zaawansowaną analitykę i kopię w chmurze!</string>
     <string name="subscribe_premium">Subskrybuj - 0.99 € / miesiąc</string>
     <string name="price_info">Anuluj w dowolnym momencie. Brak ukrytych opłat.</string>
+    <string-array name="default_expense_categories">
+        <item>Mieszkanie i rachunki</item>
+        <item>Transport</item>
+        <item>Jedzenie i napoje</item>
+        <item>Zdrowie i sport</item>
+        <item>Rozrywka</item>
+        <item>Edukacja i rozwój</item>
+        <item>Podróże</item>
+        <item>Rodzina i dzieci</item>
+        <item>Zakupy i usługi</item>
+        <item>Prezenty i darowizny</item>
+        <item>Oszczędności i inwestycje</item>
+        <item>Inne</item>
+    </string-array>
+    <string-array name="default_income_categories">
+        <item>Wynagrodzenie</item>
+        <item>Premia</item>
+        <item>Dochód pasywny</item>
+        <item>Prezenty</item>
+        <item>Inne</item>
+    </string-array>
+    <string name="snackbar_saved">Zapisano</string>
 </resources>

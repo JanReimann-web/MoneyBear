@@ -116,7 +116,6 @@
     <string name="savings_goal_label">Taupymo tikslas</string>
     <string name="savings_goal_helper">Nustatykite, kiek norite sutaupyti iš viso.</string>
     <string name="save_savings_goal">Išsaugoti tikslą</string>
-    <string name="savings_contribution_label">Pridėti prie taupymo</string>
     <string name="savings_contribution_helper">Sekite įmokas ar pervedimus į taupymą.</string>
     <string name="add_savings">Pridėti</string>
     <string name="reset_savings">Atstatyti progresą</string>
@@ -151,11 +150,11 @@
     <string name="gamification_title">Motyvacija</string>
     <string name="gamification_badges_summary">Atrakinta %1$d iš %2$d ženklelių</string>
     <string name="badge_budget_guardian">Biudžeto sargas</string>
-    <string name="badge_budget_guardian_desc">Išlaidos buvo mažesnės nei 90 %% šio mėnesio biudžeto.</string>
+    <string name="badge_budget_guardian_desc">Išlaidos buvo mažesnės nei 90% šio mėnesio biudžeto.</string>
     <string name="badge_savings_starter">Taupymo pradžia</string>
-    <string name="badge_savings_starter_desc">Pasiekė 25 %% taupymo tikslo.</string>
+    <string name="badge_savings_starter_desc">Pasiekė 25% taupymo tikslo.</string>
     <string name="badge_savings_champion">Taupymo čempionas</string>
-    <string name="badge_savings_champion_desc">Pasiekė 75 %% taupymo tikslo.</string>
+    <string name="badge_savings_champion_desc">Pasiekė 75% taupymo tikslo.</string>
     <string name="badge_future_planner">Ateities planuotojas</string>
     <string name="badge_future_planner_desc">Suplanavo būsimas operacijas.</string>
     <string name="badge_net_positive">Teigiamas balansas</string>
@@ -165,7 +164,7 @@
     <string name="monthly_budget_label">Mėnesio biudžeto suma</string>
     <string name="monthly_budget_error">Įveskite galiojantį skaičių (pvz., 250.00)</string>
     <string name="save_budget">Išsaugoti biudžetą</string>
-    <string name="appearance_section_title">Išvaizda ir personalizavimas</string>
+    <string name="appearance_section_title">Išvaizda</string>
     <string name="budget_cycle_start_label">Biudžeto ciklas prasideda</string>
     <string name="budget_cycle_helper">Naudokite tai, kad pritaikytumėte prie atlyginimo dienos, o ne kalendorinio mėnesio.</string>
     <string name="budget_cycle_day_first">Pirmoji mėnesio diena</string>
@@ -186,4 +185,26 @@
     <string name="premium_features">Gaukite neribotas operacijas, pažangią analitiką ir debesies atsarginę kopiją!</string>
     <string name="subscribe_premium">Prenumeruoti — 0,99 € / mėn.</string>
     <string name="price_info">Atšaukite bet kada. Jokių paslėptų mokesčių.</string>
+    <string-array name="default_expense_categories">
+        <item>Būstas ir komunalinės paslaugos</item>
+        <item>Transportas</item>
+        <item>Maistas ir gėrimai</item>
+        <item>Sveikata ir sportas</item>
+        <item>Pramogos</item>
+        <item>Švietimas ir tobulėjimas</item>
+        <item>Kelionės</item>
+        <item>Šeima ir vaikai</item>
+        <item>Pirkimai ir paslaugos</item>
+        <item>Dovanos ir aukos</item>
+        <item>Santaupos ir investicijos</item>
+        <item>Kita</item>
+    </string-array>
+    <string-array name="default_income_categories">
+        <item>Atlyginimas</item>
+        <item>Premija</item>
+        <item>Pasyvios pajamos</item>
+        <item>Dovanos</item>
+        <item>Kita</item>
+    </string-array>
+    <string name="snackbar_saved">Išsaugota</string>
 </resources>

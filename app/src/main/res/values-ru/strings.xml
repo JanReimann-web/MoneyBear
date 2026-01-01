@@ -116,7 +116,6 @@
     <string name="savings_goal_label">Цель накоплений</string>
     <string name="savings_goal_helper">Укажите, сколько хотите накопить всего.</string>
     <string name="save_savings_goal">Сохранить цель</string>
-    <string name="savings_contribution_label">Пополнение накоплений</string>
     <string name="savings_contribution_helper">Отслеживайте пополнения или переводы в накопления.</string>
     <string name="add_savings">Добавить</string>
     <string name="reset_savings">Сбросить прогресс</string>
@@ -151,11 +150,11 @@
     <string name="gamification_title">Мотивация</string>
     <string name="gamification_badges_summary">Открыто %1$d из %2$d значков</string>
     <string name="badge_budget_guardian">Хранитель бюджета</string>
-    <string name="badge_budget_guardian_desc">Оставались ниже 90%% бюджета этого месяца.</string>
+    <string name="badge_budget_guardian_desc">Оставались ниже 90% бюджета этого месяца.</string>
     <string name="badge_savings_starter">Старт накоплений</string>
-    <string name="badge_savings_starter_desc">Достигли 25%% цели накоплений.</string>
+    <string name="badge_savings_starter_desc">Достигли 25% цели накоплений.</string>
     <string name="badge_savings_champion">Чемпион накоплений</string>
-    <string name="badge_savings_champion_desc">Достигли 75%% цели накоплений.</string>
+    <string name="badge_savings_champion_desc">Достигли 75% цели накоплений.</string>
     <string name="badge_future_planner">Планировщик будущего</string>
     <string name="badge_future_planner_desc">Запланировали предстоящие операции.</string>
     <string name="badge_net_positive">Положительный баланс</string>
@@ -165,7 +164,7 @@
     <string name="monthly_budget_label">Сумма месячного бюджета</string>
     <string name="monthly_budget_error">Введите корректное число (например, 250.00)</string>
     <string name="save_budget">Сохранить бюджет</string>
-    <string name="appearance_section_title">Внешний вид и персонализация</string>
+    <string name="appearance_section_title">Внешний вид</string>
     <string name="budget_cycle_start_label">Бюджетный цикл начинается</string>
     <string name="budget_cycle_helper">Используйте это, чтобы привязать к дню зарплаты, а не календарному месяцу.</string>
     <string name="budget_cycle_day_first">Первый день месяца</string>
@@ -186,4 +185,26 @@
     <string name="premium_features">Получите неограниченные операции, продвинутую аналитику и облачное резервное копирование!</string>
     <string name="subscribe_premium">Подписка — 0,99 € / месяц</string>
     <string name="price_info">Отмена в любой момент. Без скрытых платежей.</string>
+    <string-array name="default_expense_categories">
+        <item>Жилье и коммунальные услуги</item>
+        <item>Транспорт</item>
+        <item>Еда и напитки</item>
+        <item>Здоровье и спорт</item>
+        <item>Развлечения</item>
+        <item>Образование и развитие</item>
+        <item>Путешествия</item>
+        <item>Семья и дети</item>
+        <item>Покупки и услуги</item>
+        <item>Подарки и пожертвования</item>
+        <item>Сбережения и инвестиции</item>
+        <item>Другое</item>
+    </string-array>
+    <string-array name="default_income_categories">
+        <item>Зарплата</item>
+        <item>Бонус</item>
+        <item>Пассивный доход</item>
+        <item>Подарки</item>
+        <item>Другое</item>
+    </string-array>
+    <string name="snackbar_saved">Сохранено</string>
 </resources>

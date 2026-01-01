@@ -116,7 +116,6 @@
     <string name="savings_goal_label">Opsparingsmål</string>
     <string name="savings_goal_helper">Angiv hvor meget du vil spare i alt.</string>
     <string name="save_savings_goal">Gem mål</string>
-    <string name="savings_contribution_label">Tilføj til opsparing</string>
     <string name="savings_contribution_helper">Spor indbetalinger eller overførsler til opsparing.</string>
     <string name="add_savings">Tilføj</string>
     <string name="reset_savings">Nulstil fremgang</string>
@@ -151,11 +150,11 @@
     <string name="gamification_title">Motivation</string>
     <string name="gamification_badges_summary">%1$d / %2$d mærker låst op</string>
     <string name="badge_budget_guardian">Budgetvogter</string>
-    <string name="badge_budget_guardian_desc">Holdt sig under 90 %% af denne måneds budget.</string>
+    <string name="badge_budget_guardian_desc">Holdt sig under 90% af denne måneds budget.</string>
     <string name="badge_savings_starter">Opsparingsstarter</string>
-    <string name="badge_savings_starter_desc">Nåede 25 %% af opsparingsmålet.</string>
+    <string name="badge_savings_starter_desc">Nåede 25% af opsparingsmålet.</string>
     <string name="badge_savings_champion">Opsparingsmester</string>
-    <string name="badge_savings_champion_desc">Nåede 75 %% af opsparingsmålet.</string>
+    <string name="badge_savings_champion_desc">Nåede 75% af opsparingsmålet.</string>
     <string name="badge_future_planner">Fremtidsplanlægger</string>
     <string name="badge_future_planner_desc">Planlagde kommende transaktioner.</string>
     <string name="badge_net_positive">Netto positiv</string>
@@ -165,7 +164,7 @@
     <string name="monthly_budget_label">Månedligt budgetbeløb</string>
     <string name="monthly_budget_error">Indtast et gyldigt tal (f.eks. 250.00)</string>
     <string name="save_budget">Gem budget</string>
-    <string name="appearance_section_title">Udseende og personliggørelse</string>
+    <string name="appearance_section_title">Udseende</string>
     <string name="budget_cycle_start_label">Budgetperiode starter</string>
     <string name="budget_cycle_helper">Brug dette til at matche din lønningsdag i stedet for kalenderen.</string>
     <string name="budget_cycle_day_first">Første dag i måneden</string>
@@ -186,4 +185,26 @@
     <string name="premium_features">Få ubegrænsede transaktioner, avanceret analyse og cloud-backup!</string>
     <string name="subscribe_premium">Abonnér - 0.99 € / måned</string>
     <string name="price_info">Annuller når som helst. Ingen skjulte gebyrer.</string>
+    <string-array name="default_expense_categories">
+        <item>Bolig og forsyninger</item>
+        <item>Transport</item>
+        <item>Mad og drikke</item>
+        <item>Sundhed og sport</item>
+        <item>Underholdning</item>
+        <item>Uddannelse og udvikling</item>
+        <item>Rejser</item>
+        <item>Familie og børn</item>
+        <item>Indkøb og tjenester</item>
+        <item>Gaver og donationer</item>
+        <item>Opsparing og investeringer</item>
+        <item>Andet</item>
+    </string-array>
+    <string-array name="default_income_categories">
+        <item>Løn</item>
+        <item>Bonus</item>
+        <item>Passiv indkomst</item>
+        <item>Gaver</item>
+        <item>Andet</item>
+    </string-array>
+    <string name="snackbar_saved">Gemt</string>
 </resources>
