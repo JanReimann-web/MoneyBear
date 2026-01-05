@@ -79,7 +79,9 @@
     <string name="utilization_label">Utilization</string>
     <string name="daily_limit_title">Recommended daily limit</string>
     <string name="days_remaining_title">Days remaining</string>
+    <string name="days_remaining_unit">days</string>
     <string name="per_day_amount">%1$d %2$s/day</string>
+    <string name="per_day_unit">%1$s/day</string>
     <string name="no_budget_set">Set a monthly budget in Settings to unlock this view.</string>
     <string name="chart_expense_categories_title">Expenses by category</string>
     <string name="chart_income_categories_title">Income by category</string>
@@ -173,11 +175,11 @@
     <string name="gamification_title">Motivation</string>
     <string name="gamification_badges_summary">%1$d / %2$d badges unlocked</string>
     <string name="badge_budget_guardian">Budget guardian</string>
-    <string name="badge_budget_guardian_desc">Stayed under 90%% of this month&#8217;s budget.</string>
+    <string name="badge_budget_guardian_desc" formatted="false">Stayed under 90% of this month&#8217;s budget.</string>
     <string name="badge_savings_starter">Savings starter</string>
-    <string name="badge_savings_starter_desc">Reached 25%% of your savings goal.</string>
+    <string name="badge_savings_starter_desc" formatted="false">Reached 25% of your savings goal.</string>
     <string name="badge_savings_champion">Savings champion</string>
-    <string name="badge_savings_champion_desc">Reached 75%% of your savings goal.</string>
+    <string name="badge_savings_champion_desc" formatted="false">Reached 75% of your savings goal.</string>
     <string name="badge_future_planner">Future planner</string>
     <string name="badge_future_planner_desc">Scheduled upcoming transactions.</string>
     <string name="badge_net_positive">Net positive</string>

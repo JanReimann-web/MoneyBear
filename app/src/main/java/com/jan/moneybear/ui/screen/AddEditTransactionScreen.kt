@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -238,7 +239,8 @@ fun AddEditTransactionScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             val cardShape = RoundedCornerShape(20.dp)
@@ -567,6 +569,12 @@ fun AddEditTransactionScreen(
                             )
                         }
                     } else {
+                        val savingsChipColors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            selectedLabelColor = MaterialTheme.colorScheme.onSurface,
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -580,6 +588,7 @@ fun AddEditTransactionScreen(
                                     modifier = Modifier.weight(1f),
                                     selected = savingsDirection == direction,
                                     onClick = { savingsDirection = direction },
+                                    colors = savingsChipColors,
                                     label = {
                                         Box(
                                             modifier = Modifier.fillMaxWidth(),
@@ -707,4 +716,3 @@ private fun addMonthsToDate(dateMillis: Long, offset: Int): Long {
     }
     return cal.timeInMillis
 }
-

@@ -57,6 +57,7 @@
     <string name="daily_limit_title">Rekommenderat dagsbelopp</string>
     <string name="days_remaining_title">Dagar kvar</string>
     <string name="per_day_amount">%1$d %2$s/dag</string>
+    <string name="per_day_unit">%1$s/dag</string>
     <string name="no_budget_set">Ställ in en månadsbudget i Inställningar för att låsa upp denna vy.</string>
     <string name="chart_expense_categories_title">Utgifter per kategori</string>
     <string name="chart_income_categories_title">Inkomster per kategori</string>
@@ -150,7 +151,7 @@
     <string name="gamification_title">Motivation</string>
     <string name="gamification_badges_summary">%1$d / %2$d märken upplåsta</string>
     <string name="badge_budget_guardian">Budgetvakt</string>
-    <string name="badge_budget_guardian_desc">Höll sig under 90%% av denna månads budget.</string>
+    <string name="badge_budget_guardian_desc" formatted="false">Höll sig under 90% av denna månads budget.</string>
     <string name="badge_savings_starter">Sparstartare</string>
     <string name="badge_savings_starter_desc">Nådde 25%% av sparmålet.</string>
     <string name="badge_savings_champion">Sparmestare</string>
@@ -207,4 +208,5 @@
         <item>Övrigt</item>
     </string-array>
     <string name="snackbar_saved">Sparat</string>
+    <string name="days_remaining_unit">dagar</string>
 </resources>

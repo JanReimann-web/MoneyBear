@@ -57,6 +57,7 @@
     <string name="daily_limit_title">Рекомендуемый дневной лимит</string>
     <string name="days_remaining_title">Осталось дней</string>
     <string name="per_day_amount">%1$d %2$s/день</string>
+    <string name="per_day_unit">%1$s/день</string>
     <string name="no_budget_set">Установите месячный бюджет в Настройках, чтобы открыть этот экран.</string>
     <string name="chart_expense_categories_title">Расходы по категориям</string>
     <string name="chart_income_categories_title">Доходы по категориям</string>
@@ -150,7 +151,7 @@
     <string name="gamification_title">Мотивация</string>
     <string name="gamification_badges_summary">Открыто %1$d из %2$d значков</string>
     <string name="badge_budget_guardian">Хранитель бюджета</string>
-    <string name="badge_budget_guardian_desc">Оставались ниже 90%% бюджета этого месяца.</string>
+    <string name="badge_budget_guardian_desc" formatted="false">Оставались ниже 90% бюджета этого месяца.</string>
     <string name="badge_savings_starter">Старт накоплений</string>
     <string name="badge_savings_starter_desc">Достигли 25%% цели накоплений.</string>
     <string name="badge_savings_champion">Чемпион накоплений</string>
@@ -207,4 +208,5 @@
         <item>Другое</item>
     </string-array>
     <string name="snackbar_saved">Сохранено</string>
+    <string name="days_remaining_unit">дней</string>
 </resources>

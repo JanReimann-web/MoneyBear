@@ -3,7 +3,6 @@ package com.jan.moneybear.ui.screen
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jan.moneybear.MoneyBearApp
 import com.jan.moneybear.R
+import com.jan.moneybear.ui.components.MoneyBearLogo
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -201,10 +201,9 @@ private fun LoginHeroSection(
                         .padding(end = 16.dp)
                 )
 
-                Image(
-                    painter = painterResource(id = R.drawable.ic_moneybear),
-                    contentDescription = null,
-                    modifier = Modifier.size(140.dp)
+                MoneyBearLogo(
+                    modifier = Modifier.size(140.dp),
+                    contentDescription = null
                 )
             }
 
@@ -346,7 +345,6 @@ private fun LegalSheetContent(
         }
     }
 }
-
 
 
 

@@ -57,6 +57,7 @@
     <string name="daily_limit_title">Rekomenduojamas dienos limitas</string>
     <string name="days_remaining_title">Liko dienų</string>
     <string name="per_day_amount">%1$d %2$s/dieną</string>
+    <string name="per_day_unit">%1$s/dieną</string>
     <string name="no_budget_set">Nustatykite mėnesio biudžetą Nustatymuose, kad atrakintumėte šį vaizdą.</string>
     <string name="chart_expense_categories_title">Išlaidos pagal kategorijas</string>
     <string name="chart_income_categories_title">Pajamos pagal kategorijas</string>
@@ -150,7 +151,7 @@
     <string name="gamification_title">Motyvacija</string>
     <string name="gamification_badges_summary">Atrakinta %1$d iš %2$d ženklelių</string>
     <string name="badge_budget_guardian">Biudžeto sargas</string>
-    <string name="badge_budget_guardian_desc">Išlaidos buvo mažesnės nei 90%% šio mėnesio biudžeto.</string>
+    <string name="badge_budget_guardian_desc" formatted="false">Išlaidos buvo mažesnės nei 90% šio mėnesio biudžeto.</string>
     <string name="badge_savings_starter">Taupymo pradžia</string>
     <string name="badge_savings_starter_desc">Pasiekė 25%% taupymo tikslo.</string>
     <string name="badge_savings_champion">Taupymo čempionas</string>
@@ -207,4 +208,5 @@
         <item>Kita</item>
     </string-array>
     <string name="snackbar_saved">Išsaugota</string>
+    <string name="days_remaining_unit">dienos</string>
 </resources>

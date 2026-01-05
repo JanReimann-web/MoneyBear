@@ -56,6 +56,7 @@
   "daily_limit_title": "Suositeltu päiväraja",
   "days_remaining_title": "Päiviä jäljellä",
   "per_day_amount": "%1$d %2$s/päivä",
+  "per_day_unit": "%1$s/päivä",
   "no_budget_set": "Aseta kuukausibudjetti Asetuksissa, jotta tämä näkymä avautuu.",
   "chart_expense_categories_title": "Kulut kategorioittain",
   "chart_income_categories_title": "Tulot kategorioittain",

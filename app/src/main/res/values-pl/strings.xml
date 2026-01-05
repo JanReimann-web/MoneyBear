@@ -57,6 +57,7 @@
     <string name="daily_limit_title">Zalecany limit dzienny</string>
     <string name="days_remaining_title">Pozostałe dni</string>
     <string name="per_day_amount">%1$d %2$s/dzień</string>
+    <string name="per_day_unit">%1$s/dzień</string>
     <string name="no_budget_set">Ustaw budżet miesięczny w Ustawieniach, aby odblokować ten widok.</string>
     <string name="chart_expense_categories_title">Wydatki według kategorii</string>
     <string name="chart_income_categories_title">Przychody według kategorii</string>
@@ -150,7 +151,7 @@
     <string name="gamification_title">Motywacja</string>
     <string name="gamification_badges_summary">%1$d / %2$d odznak odblokowano</string>
     <string name="badge_budget_guardian">Strażnik budżetu</string>
-    <string name="badge_budget_guardian_desc">Pozostał poniżej 90%% budżetu w tym miesiącu.</string>
+    <string name="badge_budget_guardian_desc" formatted="false">Pozostał poniżej 90% budżetu w tym miesiącu.</string>
     <string name="badge_savings_starter">Start oszczędzania</string>
     <string name="badge_savings_starter_desc">Osiągnął 25%% celu oszczędności.</string>
     <string name="badge_savings_champion">Mistrz oszczędzania</string>
@@ -207,4 +208,5 @@
         <item>Inne</item>
     </string-array>
     <string name="snackbar_saved">Zapisano</string>
+    <string name="days_remaining_unit">dni</string>
 </resources>

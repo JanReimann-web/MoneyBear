@@ -56,6 +56,7 @@
   "daily_limit_title": "Рекомендуемый дневной лимит",
   "days_remaining_title": "Осталось дней",
   "per_day_amount": "%1$d %2$s/день",
+  "per_day_unit": "%1$s/день",
   "no_budget_set": "Установите месячный бюджет в Настройках, чтобы открыть этот экран.",
   "chart_expense_categories_title": "Расходы по категориям",
   "chart_income_categories_title": "Доходы по категориям",

@@ -8,6 +8,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +32,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -82,8 +85,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -91,6 +97,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
@@ -133,6 +141,8 @@ private const val EMOJI_DAYS_REMAINING = "⏳"
 private const val EMOJI_GAMIFICATION = "🏆"
 private const val EMOJI_VIEW_DETAILS = "\uD83D\uDD0D"
 private const val BALANCE_CHART_FUTURE_MONTHS = 4L
+private const val MILLIS_PER_DAY = 86_400_000L
+private const val RECENT_TRANSACTIONS_INDEX = 6
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -331,6 +341,10 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
+        val density = LocalDensity.current
+        val contentTopPaddingPx = with(density) {
+            (paddingValues.calculateTopPadding() + 20.dp).toPx()
+        }
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -352,7 +366,8 @@ fun HomeScreen(
                 KpiRow(
                     dailyLimit = dailyLimit,
                     currency = currency,
-                    daysRemaining = cycleInfo.daysRemaining
+                    daysRemaining = cycleInfo.daysRemaining,
+                    totalDays = cycleInfo.totalDays
                 )
             }
             item {
@@ -406,12 +421,27 @@ fun HomeScreen(
                     recentTransactions = recentTransactions,
                     currency = currency,
                     historyExpanded = historyExpanded,
-                    onHistoryToggle = { expanded -> historyExpanded = expanded },
+                    onHistoryToggle = { expanded ->
+                        historyExpanded = expanded
+                        if (expanded) {
+                            coroutineScope.launch {
+                                listState.animateScrollToItem(RECENT_TRANSACTIONS_INDEX)
+                            }
+                        }
+                    },
                     future = futureTransactions,
                     current = transactionsCurrent,
                     previous = transactionsPrevious,
                     twoAgo = transactionsTwoMonthsAgo,
                     olderLocal = olderTransactions,
+                    onAccordionExpanded = { headerY ->
+                        coroutineScope.launch {
+                            val delta = headerY - contentTopPaddingPx
+                            if (delta > 0f) {
+                                listState.animateScrollBy(delta)
+                            }
+                        }
+                    },
                     onTransactionClick = { transaction ->
                         actionTarget = transaction
                         showActionSheet = true
@@ -504,30 +534,51 @@ private fun CategoryChartCard(
                 .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            val titleIconSlot = 18.dp
+            val titleIconSpacing = 4.dp
+            val titleLinkSpacing = 0.dp
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "$EMOJI_CATEGORY $title",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextButton(
-                        onClick = onToggle,
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
-                    ) {
-                        Text(text = toggleLabel, style = MaterialTheme.typography.labelLarge)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier.width(titleIconSlot),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = EMOJI_CATEGORY,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(titleIconSpacing))
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
                     IconButton(onClick = onExpand) {
                         Text(text = EMOJI_VIEW_DETAILS, style = MaterialTheme.typography.titleMedium)
                     }
                 }
+                Spacer(modifier = Modifier.height(titleLinkSpacing))
+                Text(
+                    text = toggleLabel,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Start,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(start = titleIconSlot + titleIconSpacing)
+                        .clickable(onClick = onToggle)
+                )
             }
             if (categories.isEmpty() || totals.all { it <= 0.0 }) {
                 Text(
@@ -669,11 +720,12 @@ private fun BalanceChartContent(
                 )
             }
             else -> {
-                val latest = points.last()
+                val nowMillis = System.currentTimeMillis()
+                val currentPoint = points.lastOrNull { it.timeMillis <= nowMillis } ?: points.first()
                 BalanceSummaryRow(
-                    total = latest.total,
-                    reserved = latest.reserved,
-                    available = latest.available,
+                    total = currentPoint.total,
+                    reserved = currentPoint.reserved,
+                    available = currentPoint.available,
                     currency = currency
                 )
                 BalanceStackedAreaChart(points = points)
@@ -730,13 +782,21 @@ private fun SummaryValueColumn(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            text = formatCurrency(value, currency),
+            text = formatAmount(value),
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = currency,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
 
+@Suppress("UnusedBoxWithConstraintsScope")
 @Composable
 private fun BalanceStackedAreaChart(
     points: List<BalancePoint>,
@@ -745,93 +805,118 @@ private fun BalanceStackedAreaChart(
     val reservedColor = MaterialTheme.colorScheme.secondary
     val availableColor = MaterialTheme.colorScheme.primary
     val outline = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
-    Canvas(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(220.dp)
-    ) {
-        val xMin = points.first().timeMillis.toFloat()
-        val xMax = points.last().timeMillis.toFloat()
-        val xRange = (xMax - xMin).takeIf { it != 0f } ?: 1f
-        val minValue = points.minOf { min(it.available, it.total) }.coerceAtMost(0.0)
-        val maxValue = points.maxOf { max(it.available, it.total) }.coerceAtLeast(1.0)
-        val valueRange = (maxValue - minValue).takeIf { it != 0.0 } ?: 1.0
-        fun mapX(time: Long): Float = ((time - xMin) / xRange) * size.width
-        fun mapY(value: Double): Float =
-            size.height - (((value - minValue) / valueRange).toFloat() * size.height)
+    val scrollState = rememberScrollState()
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val visibleDays = if (isLandscape) 180 else 120
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val density = LocalDensity.current
+        val startMillis = points.first().timeMillis
+        val endMillis = points.last().timeMillis
+        val rangeMillis = (endMillis - startMillis).coerceAtLeast(1L)
+        val rangeDays = (rangeMillis.toDouble() / MILLIS_PER_DAY.toDouble()).coerceAtLeast(1.0)
+        val dayWidth = maxWidth / visibleDays.toFloat()
+        val computedWidth = dayWidth * rangeDays.toFloat()
+        val chartWidth = if (computedWidth < maxWidth) maxWidth else computedWidth
+        val viewportWidthPx = with(density) { maxWidth.toPx() }
+        val dayWidthPx = with(density) { dayWidth.toPx() }
+        val todayMillis = System.currentTimeMillis().coerceIn(startMillis, endMillis)
+        val todayOffsetDays = (todayMillis - startMillis).toFloat() / MILLIS_PER_DAY
+        val targetScroll = ((todayOffsetDays * dayWidthPx) - (viewportWidthPx / 2f))
+            .roundToInt()
+            .coerceIn(0, scrollState.maxValue)
+        LaunchedEffect(chartWidth, scrollState.maxValue, visibleDays, startMillis, endMillis) {
+            if (scrollState.maxValue > 0) {
+                scrollState.scrollTo(targetScroll)
+            }
+        }
+        Column(modifier = Modifier.horizontalScroll(scrollState)) {
+            Canvas(
+                modifier = Modifier
+                    .width(chartWidth)
+                    .height(220.dp)
+            ) {
+                val xMin = points.first().timeMillis.toFloat()
+                val xMax = points.last().timeMillis.toFloat()
+                val xRange = (xMax - xMin).takeIf { it != 0f } ?: 1f
+                val minValue = points.minOf { min(it.available, it.total) }.coerceAtMost(0.0)
+                val maxValue = points.maxOf { max(it.available, it.total) }.coerceAtLeast(1.0)
+                val valueRange = (maxValue - minValue).takeIf { it != 0.0 } ?: 1.0
+                fun mapX(time: Long): Float = ((time - xMin) / xRange) * size.width
+                fun mapY(value: Double): Float =
+                    size.height - (((value - minValue) / valueRange).toFloat() * size.height)
 
-        val baselineY = mapY(minValue)
-        val availablePath = Path().apply {
-            moveTo(mapX(points.first().timeMillis), baselineY)
-            points.forEach { point ->
-                lineTo(mapX(point.timeMillis), mapY(point.available))
-            }
-            lineTo(mapX(points.last().timeMillis), baselineY)
-            close()
-        }
-        val reservedPath = Path().apply {
-            moveTo(mapX(points.first().timeMillis), mapY(points.first().available))
-            points.forEach { point ->
-                lineTo(mapX(point.timeMillis), mapY(point.total))
-            }
-            points.asReversed().forEach { point ->
-                lineTo(mapX(point.timeMillis), mapY(point.available))
-            }
-            close()
-        }
-        drawPath(
-            path = reservedPath,
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    reservedColor.copy(alpha = 0.8f),
-                    reservedColor.copy(alpha = 0.4f)
+                val baselineY = mapY(minValue)
+                val availablePath = Path().apply {
+                    moveTo(mapX(points.first().timeMillis), baselineY)
+                    points.forEach { point ->
+                        lineTo(mapX(point.timeMillis), mapY(point.available))
+                    }
+                    lineTo(mapX(points.last().timeMillis), baselineY)
+                    close()
+                }
+                val reservedPath = Path().apply {
+                    moveTo(mapX(points.first().timeMillis), mapY(points.first().available))
+                    points.forEach { point ->
+                        lineTo(mapX(point.timeMillis), mapY(point.total))
+                    }
+                    points.asReversed().forEach { point ->
+                        lineTo(mapX(point.timeMillis), mapY(point.available))
+                    }
+                    close()
+                }
+                drawPath(
+                    path = reservedPath,
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            reservedColor.copy(alpha = 0.8f),
+                            reservedColor.copy(alpha = 0.4f)
+                        )
+                    )
                 )
-            )
-        )
-        drawPath(
-            path = availablePath,
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    availableColor.copy(alpha = 0.9f),
-                    availableColor.copy(alpha = 0.5f)
+                drawPath(
+                    path = availablePath,
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            availableColor.copy(alpha = 0.9f),
+                            availableColor.copy(alpha = 0.5f)
+                        )
+                    )
                 )
-            )
-        )
-        val zeroY = mapY(0.0)
-        if (zeroY in 0f..size.height) {
-            drawLine(
-                color = outline,
-                start = Offset(0f, zeroY),
-                end = Offset(size.width, zeroY),
-                strokeWidth = 1.dp.toPx()
-            )
+                val zeroY = mapY(0.0)
+                if (zeroY in 0f..size.height) {
+                    drawLine(
+                        color = outline,
+                        start = Offset(0f, zeroY),
+                        end = Offset(size.width, zeroY),
+                        strokeWidth = 1.dp.toPx()
+                    )
+                }
+            }
+            val dateFormatter = remember { SimpleDateFormat("dd MMM", Locale.getDefault()) }
+            val startLabel = dateFormatter.format(startMillis)
+            val todayLabel = dateFormatter.format(todayMillis)
+            val endLabel = dateFormatter.format(endMillis)
+            Row(
+                modifier = Modifier.width(chartWidth),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = startLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = todayLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = endLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
-    }
-    val dateFormatter = remember { SimpleDateFormat("dd MMM", Locale.getDefault()) }
-    val startLabel = dateFormatter.format(points.first().timeMillis)
-    val todayMillis = System.currentTimeMillis()
-        .coerceIn(points.first().timeMillis, points.last().timeMillis)
-    val todayLabel = dateFormatter.format(todayMillis)
-    val endLabel = dateFormatter.format(points.last().timeMillis)
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = startLabel,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = todayLabel,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = endLabel,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }
 
@@ -848,6 +933,7 @@ private fun BalanceLegend(
     )
 }
 
+@Suppress("UnusedBoxWithConstraintsScope")
 @Composable
 private fun StackedBarChart(
     months: List<String>,
@@ -886,7 +972,8 @@ private fun StackedBarChart(
         val targetVisibleBars = viewportMonths.size.coerceAtLeast(1)
         val availableWidth = maxWidth - (barSpacing * (targetVisibleBars - 1).toFloat())
         val barWidth = (availableWidth / targetVisibleBars.toFloat()).coerceAtLeast(24.dp)
-        val chartHeight = if (maxHeight != Dp.Unspecified) maxHeight else 240.dp
+        val hasBoundedHeight = constraints.hasBoundedHeight
+        val chartHeight = if (hasBoundedHeight) maxHeight else 240.dp
         val labelSpace = 28.dp
         val barAreaHeight = (chartHeight - labelSpace).coerceAtLeast(0.dp)
         LazyRow(
@@ -1531,6 +1618,7 @@ private fun RecentTransactionsCard(
     currency: String,
     historyExpanded: Boolean,
     onHistoryToggle: (Boolean) -> Unit,
+    onAccordionExpanded: (Float) -> Unit,
     future: List<Transaction>,
     current: List<Transaction>,
     previous: List<Transaction>,
@@ -1566,19 +1654,16 @@ private fun RecentTransactionsCard(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
-                    TextButton(onClick = { onHistoryToggle(!historyExpanded) }) {
-                        Icon(
-                            imageVector = if (historyExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = if (historyExpanded) {
-                                stringResource(R.string.hide_transaction_history)
-                            } else {
-                                stringResource(R.string.view_transaction_history)
-                            }
-                        )
+                    val historyToggleLabel = if (historyExpanded) {
+                        stringResource(R.string.hide_transaction_history)
+                    } else {
+                        stringResource(R.string.view_transaction_history)
+                    }
+                    IconButton(
+                        onClick = { onHistoryToggle(!historyExpanded) },
+                        modifier = Modifier.semantics { contentDescription = historyToggleLabel }
+                    ) {
+                        Text(text = EMOJI_VIEW_DETAILS, style = MaterialTheme.typography.titleMedium)
                     }
                 }
                 if (recentTransactions.isEmpty()) {
@@ -1622,6 +1707,7 @@ private fun RecentTransactionsCard(
                         previous = previous,
                         twoAgo = twoAgo,
                         olderLocal = olderLocal,
+                        onAccordionExpanded = onAccordionExpanded,
                         onTransactionClick = onTransactionClick
                     )
                 }
@@ -1639,6 +1725,7 @@ private fun TransactionHistoryContent(
     previous: List<Transaction>,
     twoAgo: List<Transaction>,
     olderLocal: List<Transaction>,
+    onAccordionExpanded: (Float) -> Unit,
     onTransactionClick: (Transaction) -> Unit
 ) {
     val futureLabel = stringResource(R.string.future_transactions)
@@ -1671,6 +1758,7 @@ private fun TransactionHistoryContent(
                 section = section,
                 currency = currency,
                 initiallyExpanded = section.title == currentLabel,
+                onAccordionExpanded = onAccordionExpanded,
                 onTransactionClick = onTransactionClick
             )
         }
@@ -1694,9 +1782,11 @@ private fun TransactionAccordion(
     section: TransactionSection,
     currency: String,
     initiallyExpanded: Boolean,
+    onAccordionExpanded: (Float) -> Unit,
     onTransactionClick: (Transaction) -> Unit
 ) {
     var expanded by rememberSaveable(section.title) { mutableStateOf(initiallyExpanded) }
+    var headerY by remember(section.title) { mutableStateOf<Float?>(null) }
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
@@ -1705,7 +1795,16 @@ private fun TransactionAccordion(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { expanded = !expanded }
+                .onGloballyPositioned { coordinates ->
+                    headerY = coordinates.positionInRoot().y
+                }
+                .clickable {
+                    val next = !expanded
+                    expanded = next
+                    if (next) {
+                        headerY?.let(onAccordionExpanded)
+                    }
+                }
                 .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -1789,6 +1888,7 @@ private fun TransactionAccordion(
                                 sectionTitle = section.title,
                                 group = group,
                                 currency = currency,
+                                onAccordionExpanded = onAccordionExpanded,
                                 onTransactionClick = onTransactionClick
                             )
                         }
@@ -1889,7 +1989,12 @@ private fun SummaryStat(title: String, value: String) {
 }
 
 @Composable
-private fun KpiRow(dailyLimit: Double?, currency: String, daysRemaining: Int) {
+private fun KpiRow(
+    dailyLimit: Double?,
+    currency: String,
+    daysRemaining: Int,
+    totalDays: Int
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -1909,15 +2014,15 @@ private fun KpiRow(dailyLimit: Double?, currency: String, daysRemaining: Int) {
                 Text(
                     text = "$EMOJI_DAILY_LIMIT " + stringResource(R.string.daily_limit_title),
                     style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
-                val limitText = dailyLimit?.let {
-                    val rounded = it.roundToInt().coerceAtLeast(0)
-                    stringResource(R.string.per_day_amount, rounded, currency)
-                } ?: "-"
+                val limitText = dailyLimit?.let { formatDailyLimit(it) } ?: "-"
+                val unitText = dailyLimit?.let { stringResource(R.string.per_day_unit, currency) }
                 val limitStyle = when {
-                    limitText.length > 12 -> MaterialTheme.typography.titleMedium
-                    limitText.length > 8 -> MaterialTheme.typography.titleLarge
+                    limitText.length > 10 -> MaterialTheme.typography.titleMedium
+                    limitText.length > 6 -> MaterialTheme.typography.titleLarge
                     else -> MaterialTheme.typography.headlineSmall
                 }
                 Text(
@@ -1927,6 +2032,15 @@ private fun KpiRow(dailyLimit: Double?, currency: String, daysRemaining: Int) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                unitText?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
         Card(
@@ -1944,10 +2058,35 @@ private fun KpiRow(dailyLimit: Double?, currency: String, daysRemaining: Int) {
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Text(
-                    text = daysRemaining.toString(),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = daysRemaining.toString(),
+                        style = MaterialTheme.typography.displaySmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = stringResource(R.string.days_remaining_unit),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 2.dp)
+                    )
+                }
+                val progress = if (totalDays > 0) {
+                    (totalDays - daysRemaining).coerceIn(0, totalDays) / totalDays.toFloat()
+                } else {
+                    0f
+                }
+                LinearProgressIndicator(
+                    progress = { progress },
+                    color = MaterialTheme.colorScheme.secondary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(8.dp))
                 )
             }
         }
@@ -1959,9 +2098,11 @@ private fun TransactionCategoryAccordion(
     sectionTitle: String,
     group: TransactionCategoryGroup,
     currency: String,
+    onAccordionExpanded: (Float) -> Unit,
     onTransactionClick: (Transaction) -> Unit
 ) {
     var expanded by rememberSaveable(sectionTitle, group.category) { mutableStateOf(false) }
+    var headerY by remember(sectionTitle, group.category) { mutableStateOf<Float?>(null) }
     val totalAmount = remember(group.transactions) {
         group.transactions.sumOf { transaction ->
             if (transaction.type == TxType.INCOME) transaction.amount else -transaction.amount
@@ -1985,7 +2126,16 @@ private fun TransactionCategoryAccordion(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { expanded = !expanded }
+                .onGloballyPositioned { coordinates ->
+                    headerY = coordinates.positionInRoot().y
+                }
+                .clickable {
+                    val next = !expanded
+                    expanded = next
+                    if (next) {
+                        headerY?.let(onAccordionExpanded)
+                    }
+                }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -2210,6 +2360,15 @@ private fun formatCurrency(amount: Double, currency: String, withSign: Boolean =
         else -> ""
     }
     return if (sign.isEmpty()) base else sign + base
+}
+
+private fun formatAmount(amount: Double): String {
+    return String.format(Locale.getDefault(), "%.2f", amount)
+}
+
+private fun formatDailyLimit(value: Double): String {
+    val normalized = value.coerceAtLeast(0.0)
+    return String.format(Locale.getDefault(), "%.2f", normalized)
 }
 
 private fun formatGoalDeadline(millis: Long): String {

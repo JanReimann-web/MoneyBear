@@ -57,6 +57,7 @@
     <string name="daily_limit_title">Suositeltu päiväraja</string>
     <string name="days_remaining_title">Päiviä jäljellä</string>
     <string name="per_day_amount">%1$d %2$s/päivä</string>
+    <string name="per_day_unit">%1$s/päivä</string>
     <string name="no_budget_set">Aseta kuukausibudjetti Asetuksissa, jotta tämä näkymä avautuu.</string>
     <string name="chart_expense_categories_title">Kulut kategorioittain</string>
     <string name="chart_income_categories_title">Tulot kategorioittain</string>
@@ -150,7 +151,7 @@
     <string name="gamification_title">Motivaatio</string>
     <string name="gamification_badges_summary">%1$d / %2$d merkkiä avattu</string>
     <string name="badge_budget_guardian">Budjettivahti</string>
-    <string name="badge_budget_guardian_desc">Pysyi alle 90%% tämän kuun budjetista.</string>
+    <string name="badge_budget_guardian_desc" formatted="false">Pysyi alle 90% tämän kuun budjetista.</string>
     <string name="badge_savings_starter">Säästön aloittaja</string>
     <string name="badge_savings_starter_desc">Saavutti 25%% säästötavoitteesta.</string>
     <string name="badge_savings_champion">Säästömestari</string>
@@ -207,4 +208,5 @@
         <item>Muut</item>
     </string-array>
     <string name="snackbar_saved">Tallennettu</string>
+    <string name="days_remaining_unit">päivää</string>
 </resources>

@@ -57,6 +57,7 @@
     <string name="daily_limit_title">Ieteicamais dienas limits</string>
     <string name="days_remaining_title">Atlikušās dienas</string>
     <string name="per_day_amount">%1$d %2$s/dienā</string>
+    <string name="per_day_unit">%1$s/dienā</string>
     <string name="no_budget_set">Iestatiet mēneša budžetu Iestatījumos, lai atbloķētu šo skatu.</string>
     <string name="chart_expense_categories_title">Izdevumi pa kategorijām</string>
     <string name="chart_income_categories_title">Ienākumi pa kategorijām</string>
@@ -150,7 +151,7 @@
     <string name="gamification_title">Motivācija</string>
     <string name="gamification_badges_summary">Atbloķēti %1$d no %2$d žetoniem</string>
     <string name="badge_budget_guardian">Budžeta sargs</string>
-    <string name="badge_budget_guardian_desc">Palika zem 90%% no šī mēneša budžeta.</string>
+    <string name="badge_budget_guardian_desc" formatted="false">Palika zem 90% no šī mēneša budžeta.</string>
     <string name="badge_savings_starter">Uzkrājumu sākums</string>
     <string name="badge_savings_starter_desc">Sasniedza 25%% no uzkrājuma mērķa.</string>
     <string name="badge_savings_champion">Uzkrājumu čempions</string>
@@ -207,4 +208,5 @@
         <item>Cits</item>
     </string-array>
     <string name="snackbar_saved">Saglabāts</string>
+    <string name="days_remaining_unit">dienas</string>
 </resources>

@@ -57,6 +57,7 @@
     <string name="daily_limit_title">Soovituslik päevane limiit</string>
     <string name="days_remaining_title">Päevi jäänud</string>
     <string name="per_day_amount">%1$d %2$s/päev</string>
+    <string name="per_day_unit">%1$s/päev</string>
     <string name="no_budget_set">Määra Seadetes kuueelarve, et see vaade avada.</string>
     <string name="chart_expense_categories_title">Kulud kategooriate kaupa</string>
     <string name="chart_income_categories_title">Tulud kategooriate kaupa</string>
@@ -150,11 +151,11 @@
     <string name="gamification_title">Motivatsioon</string>
     <string name="gamification_badges_summary">%1$d / %2$d märki avatud</string>
     <string name="badge_budget_guardian">Eelarve valvur</string>
-    <string name="badge_budget_guardian_desc">Jäid selle kuu eelarve alla 90%%.</string>
+    <string name="badge_budget_guardian_desc" formatted="false">Jäid selle kuu eelarve alla 90%.</string>
     <string name="badge_savings_starter">Kogumise algataja</string>
-    <string name="badge_savings_starter_desc">Jõudsid 25%% kogumise eesmärgist.</string>
+    <string name="badge_savings_starter_desc">Jõudsid 25% kogumise eesmärgist.</string>
     <string name="badge_savings_champion">Kogumise meister</string>
-    <string name="badge_savings_champion_desc">Jõudsid 75%% kogumise eesmärgist.</string>
+    <string name="badge_savings_champion_desc">Jõudsid 75% kogumise eesmärgist.</string>
     <string name="badge_future_planner">Tuleviku planeerija</string>
     <string name="badge_future_planner_desc">Planeerisid tulevased tehingud.</string>
     <string name="badge_net_positive">Netopositiivne</string>
@@ -207,4 +208,5 @@
         <item>Muu</item>
     </string-array>
     <string name="snackbar_saved">Salvestatud</string>
+    <string name="days_remaining_unit">päeva</string>
 </resources>

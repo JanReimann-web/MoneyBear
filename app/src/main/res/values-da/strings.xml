@@ -57,6 +57,7 @@
     <string name="daily_limit_title">Anbefalet daglig grænse</string>
     <string name="days_remaining_title">Dage tilbage</string>
     <string name="per_day_amount">%1$d %2$s/dag</string>
+    <string name="per_day_unit">%1$s/dag</string>
     <string name="no_budget_set">Indstil et månedsbudget i Indstillinger for at låse denne visning op.</string>
     <string name="chart_expense_categories_title">Udgifter efter kategori</string>
     <string name="chart_income_categories_title">Indtægter efter kategori</string>
@@ -150,11 +151,11 @@
     <string name="gamification_title">Motivation</string>
     <string name="gamification_badges_summary">%1$d / %2$d mærker låst op</string>
     <string name="badge_budget_guardian">Budgetvogter</string>
-    <string name="badge_budget_guardian_desc">Holdt sig under 90%% af denne måneds budget.</string>
+    <string name="badge_budget_guardian_desc" formatted="false">Holdt sig under 90% af denne måneds budget.</string>
     <string name="badge_savings_starter">Opsparingsstarter</string>
-    <string name="badge_savings_starter_desc">Nåede 25%% af opsparingsmålet.</string>
+    <string name="badge_savings_starter_desc">Nåede 25% af opsparingsmålet.</string>
     <string name="badge_savings_champion">Opsparingsmester</string>
-    <string name="badge_savings_champion_desc">Nåede 75%%S af opsparingsmålet.</string>
+    <string name="badge_savings_champion_desc">Nåede 75% af opsparingsmålet.</string>
     <string name="badge_future_planner">Fremtidsplanlægger</string>
     <string name="badge_future_planner_desc">Planlagde kommende transaktioner.</string>
     <string name="badge_net_positive">Netto positiv</string>
@@ -207,4 +208,5 @@
         <item>Andet</item>
     </string-array>
     <string name="snackbar_saved">Gemt</string>
+    <string name="days_remaining_unit">dage</string>
 </resources>

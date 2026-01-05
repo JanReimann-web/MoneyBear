@@ -56,6 +56,7 @@
   "daily_limit_title": "Rekommenderat dagsbelopp",
   "days_remaining_title": "Dagar kvar",
   "per_day_amount": "%1$d %2$s/dag",
+  "per_day_unit": "%1$s/dag",
   "no_budget_set": "Ställ in en månadsbudget i Inställningar för att låsa upp denna vy.",
   "chart_expense_categories_title": "Utgifter per kategori",
   "chart_income_categories_title": "Inkomster per kategori",

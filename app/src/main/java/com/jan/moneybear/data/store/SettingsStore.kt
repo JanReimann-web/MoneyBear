@@ -1,6 +1,7 @@
 package com.jan.moneybear.data.store
 
 import android.content.Context
+import android.content.res.Configuration
 import android.util.Base64
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
@@ -95,6 +96,27 @@ class SettingsStore(
         private const val DEFAULT_BUDGET_CYCLE_START_DAY = SettingsDefaults.BUDGET_CYCLE_START_DAY
         private val LEGACY_EXPENSE_CATEGORIES = listOf("Eluase", "Transport", "Toit", "Meelelahutus", "Muu")
         private val LEGACY_INCOME_CATEGORIES = listOf("Palk", "Bonus", "Muu")
+        private val LEGACY_EXPENSE_CATEGORIES_FULL = listOf(
+            "Eluase ja kommunaalid",
+            "Transport",
+            "Toit ja joogid",
+            "Tervis ja sport",
+            "Meelelahutus",
+            "Haridus ja areng",
+            "Reisimine",
+            "Pere ja lapsed",
+            "Ostud ja teenused",
+            "Kingitused ja annetused",
+            "Saastud ja investeeringud",
+            "Muu"
+        )
+        private val LEGACY_INCOME_CATEGORIES_FULL = listOf(
+            "Palk",
+            "Bonus",
+            "Passiivne tulu",
+            "Kingitused",
+            "Muu"
+        )
 
         private const val GOAL_DELIMITER = ";"
         private const val GOAL_FIELD_DELIMITER = "|"
@@ -110,12 +132,12 @@ class SettingsStore(
         private fun Preferences.readCategories(
             key: Preferences.Key<String>,
             fallback: List<String>,
-            legacyFallback: List<String>
+            legacyFallbacks: List<List<String>>
         ): List<String> {
             val stored = this[key]
             if (stored.isNullOrBlank()) return fallback
             val parsed = stored.split(",").map { it.trim() }.filter { it.isNotEmpty() }
-            return if (parsed == legacyFallback) fallback else parsed
+            return if (legacyFallbacks.any { it == parsed }) fallback else parsed
         }
 
         private fun encodeGoals(goals: List<SavingsGoal>): String =
@@ -183,6 +205,35 @@ class SettingsStore(
             .filterNot { it.deleted }
             .sortedByName()
 
+    private val supportedLocaleTags = listOf(
+        "en", "et", "da", "de", "fi", "lv", "lt", "no", "pl", "ru", "sv"
+    )
+
+    private fun loadCategorySet(resId: Int, localeTag: String): List<String> {
+        val locale = Locale.forLanguageTag(localeTag)
+        val config = Configuration(context.resources.configuration)
+        config.setLocale(locale)
+        val localizedContext = context.createConfigurationContext(config)
+        return localizedContext.resources.getStringArray(resId).toList()
+    }
+
+    private fun loadCategorySets(resId: Int): List<List<String>> =
+        supportedLocaleTags.map { tag -> loadCategorySet(resId, tag) }
+
+    private val defaultExpenseCategorySets by lazy {
+        loadCategorySets(R.array.default_expense_categories) + listOf(
+            LEGACY_EXPENSE_CATEGORIES,
+            LEGACY_EXPENSE_CATEGORIES_FULL
+        )
+    }
+
+    private val defaultIncomeCategorySets by lazy {
+        loadCategorySets(R.array.default_income_categories) + listOf(
+            LEGACY_INCOME_CATEGORIES,
+            LEGACY_INCOME_CATEGORIES_FULL
+        )
+    }
+
     val languageCode: Flow<String> = context.dataStore.data.map { prefs ->
         val stored = prefs[LANGUAGE_KEY]
         LanguageConfig.sanitize(stored ?: LanguageConfig.deviceDefault())
@@ -193,11 +244,19 @@ class SettingsStore(
     }
 
     val expenseCategories: Flow<List<String>> = context.dataStore.data.map { prefs ->
-        prefs.readCategories(EXPENSE_CATEGORIES_KEY, defaultExpenseCategories(context), LEGACY_EXPENSE_CATEGORIES)
+        prefs.readCategories(
+            EXPENSE_CATEGORIES_KEY,
+            defaultExpenseCategories(context),
+            defaultExpenseCategorySets
+        )
     }
 
     val incomeCategories: Flow<List<String>> = context.dataStore.data.map { prefs ->
-        prefs.readCategories(INCOME_CATEGORIES_KEY, defaultIncomeCategories(context), LEGACY_INCOME_CATEGORIES)
+        prefs.readCategories(
+            INCOME_CATEGORIES_KEY,
+            defaultIncomeCategories(context),
+            defaultIncomeCategorySets
+        )
     }
 
     val budgetMonthly: Flow<Double?> = context.dataStore.data.map { prefs ->
@@ -264,8 +323,16 @@ class SettingsStore(
         return SettingsSnapshot(
             languageCode = sanitizedLanguage,
             currencyCode = prefs[CURRENCY_KEY] ?: DEFAULT_CURRENCY,
-            expenseCategories = prefs.readCategories(EXPENSE_CATEGORIES_KEY, defaultExpenseCategories(context), LEGACY_EXPENSE_CATEGORIES),
-            incomeCategories = prefs.readCategories(INCOME_CATEGORIES_KEY, defaultIncomeCategories(context), LEGACY_INCOME_CATEGORIES),
+            expenseCategories = prefs.readCategories(
+                EXPENSE_CATEGORIES_KEY,
+                defaultExpenseCategories(context),
+                defaultExpenseCategorySets
+            ),
+            incomeCategories = prefs.readCategories(
+                INCOME_CATEGORIES_KEY,
+                defaultIncomeCategories(context),
+                defaultIncomeCategorySets
+            ),
             budgetMonthly = prefs[BUDGET_KEY],
             budgetCycleStartDay = startDay,
             themeMode = prefs[THEME_MODE_KEY] ?: DEFAULT_THEME_MODE,

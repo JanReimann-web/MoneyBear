@@ -57,6 +57,7 @@
     <string name="daily_limit_title">Empfohlenes Tageslimit</string>
     <string name="days_remaining_title">Tage verbleibend</string>
     <string name="per_day_amount">%1$d %2$s/Tag</string>
+    <string name="per_day_unit">%1$s/Tag</string>
     <string name="no_budget_set">Lege in den Einstellungen ein Monatsbudget fest, um diese Ansicht freizuschalten.</string>
     <string name="chart_expense_categories_title">Ausgaben nach Kategorie</string>
     <string name="chart_income_categories_title">Einnahmen nach Kategorie</string>
@@ -150,11 +151,11 @@
     <string name="gamification_title">Motivation</string>
     <string name="gamification_badges_summary">%1$d / %2$d Abzeichen freigeschaltet</string>
     <string name="badge_budget_guardian">Budgetwächter</string>
-    <string name="badge_budget_guardian_desc">Unter 90%% des Monatsbudgets geblieben.</string>
+    <string name="badge_budget_guardian_desc" formatted="false">Unter 90% des Monatsbudgets geblieben.</string>
     <string name="badge_savings_starter">Sparstarter</string>
-    <string name="badge_savings_starter_desc">25%% des Sparziels erreicht.</string>
+    <string name="badge_savings_starter_desc">25% des Sparziels erreicht.</string>
     <string name="badge_savings_champion">Sparchampion</string>
-    <string name="badge_savings_champion_desc">75%%S des Sparziels erreicht.</string>
+    <string name="badge_savings_champion_desc">75% des Sparziels erreicht.</string>
     <string name="badge_future_planner">Zukunftsplaner</string>
     <string name="badge_future_planner_desc">Kommende Transaktionen geplant.</string>
     <string name="badge_net_positive">Netto positiv</string>
@@ -207,4 +208,5 @@
         <item>Sonstiges</item>
     </string-array>
     <string name="snackbar_saved">Gespeichert</string>
+    <string name="days_remaining_unit">Tage</string>
 </resources>

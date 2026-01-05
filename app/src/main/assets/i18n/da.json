@@ -56,6 +56,7 @@
   "daily_limit_title": "Anbefalet daglig grænse",
   "days_remaining_title": "Dage tilbage",
   "per_day_amount": "%1$d %2$s/dag",
+  "per_day_unit": "%1$s/dag",
   "no_budget_set": "Indstil et månedsbudget i Indstillinger for at låse denne visning op.",
   "chart_expense_categories_title": "Udgifter efter kategori",
   "chart_income_categories_title": "Indtægter efter kategori",

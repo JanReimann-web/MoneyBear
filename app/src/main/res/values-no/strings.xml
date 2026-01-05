@@ -57,6 +57,7 @@
     <string name="daily_limit_title">Anbefalt daglig grense</string>
     <string name="days_remaining_title">Dager igjen</string>
     <string name="per_day_amount">%1$d %2$s/dag</string>
+    <string name="per_day_unit">%1$s/dag</string>
     <string name="no_budget_set">Sett et månedsbudsjett i Innstillinger for å låse opp denne visningen.</string>
     <string name="chart_expense_categories_title">Utgifter etter kategori</string>
     <string name="chart_income_categories_title">Inntekter etter kategori</string>
@@ -150,7 +151,7 @@
     <string name="gamification_title">Motivasjon</string>
     <string name="gamification_badges_summary">%1$d / %2$d merker låst opp</string>
     <string name="badge_budget_guardian">Budsjettvakt</string>
-    <string name="badge_budget_guardian_desc">Holdt seg under 90%% av denne månedens budsjett.</string>
+    <string name="badge_budget_guardian_desc" formatted="false">Holdt seg under 90% av denne månedens budsjett.</string>
     <string name="badge_savings_starter">Sparingsstarter</string>
     <string name="badge_savings_starter_desc">Nådde 25%% av sparemålet.</string>
     <string name="badge_savings_champion">Sparingsmester</string>
@@ -207,4 +208,5 @@
         <item>Annet</item>
     </string-array>
     <string name="snackbar_saved">Lagret</string>
+    <string name="days_remaining_unit">dager</string>
 </resources>
